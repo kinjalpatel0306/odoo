@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_estate_property_kanban" model="ir.ui.view">
+        <field name="name">estate.property.kanban</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="property_type_id" disable_drag_drop="true">
+                <field name="name"/>
+                <field name="expected_price"/>
+                <field name="best_price"/>
+                <field name="selling_price"/>
+                <field name="tag_ids"/>
+                <field name="property_type_id"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record">
+                            <!-- Property Name -->
+                            <div class="o_kanban_details">
+                                <strong><t t-esc="record.name.value"/></strong>
+                            </div>
+
+                            <!-- Expected Price -->
+                            <div>
+                                <span>Expected Price: </span>
+                                <span><t t-esc="record.expected_price.value"/></span>
+                            </div>
+
+                            <!-- Best Offer (Only if Offer Received) -->
+                            <t t-if="record.best_price.value != 0">
+                                <div>
+                                    <span>Best Offer: </span>
+                                    <span><t t-esc="record.best_price.value"/></span>
+                                </div>
+                            </t>
+
+                            <!-- Selling Price (Only if Offer Accepted) -->
+                            <t t-if="record.selling_price.value != 0">
+                                <div>
+                                    <span><strong>Final Selling Price:</strong></span>
+                                    <span><t t-esc="record.selling_price.value"/></span>
+                                </div>
+                            </t>
+
+                            <!-- Property Tags -->
+                            <div class="oe_kanban_tags">
+                                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+</odoo>

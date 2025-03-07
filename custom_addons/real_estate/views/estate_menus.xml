@@ -1,0 +1,13 @@
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="estate_property_root_menu" name="Real Estate" sequence="1"/>
+
+    <!-- Advertisements Section -->
+    <menuitem id="estate_property_sub_root_menu" name="Advertisments" parent="estate_property_root_menu" sequence="2"/>
+    <menuitem id="estate_property_action_root" action="estate_property_action" name="Property" parent="estate_property_sub_root_menu" sequence="3"/>
+    
+    <!-- Settings Section -->
+    <menuitem id="estate_property_settings_sub_root_menu" name="Settings" parent="estate_property_root_menu" sequence="4"/>
+    <menuitem id="estate_property_type_action_root" action="estate_property_type_action" name="Property Types" parent="estate_property_settings_sub_root_menu" sequence="5"/>
+    <menuitem id="estate_property_tag_action_root" action="estate_property_tag_action" name="Property Tags" parent="estate_property_settings_sub_root_menu" sequence="6"/>
+</odoo>
