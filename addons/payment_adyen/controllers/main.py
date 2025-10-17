@@ -44,10 +44,13 @@ class AdyenController(http.Controller):
         # provide the lang string as is (after adapting the format) and let Adyen find the best fit.
         lang_code = py_to_js_locale(request.context.get('lang')) or 'en-US'
         shopper_reference = partner_sudo and f'ODOO_PARTNER_{partner_sudo.id}'
+        partner_country_code = (
+            partner_sudo.country_id.code or provider_sudo.company_id.country_id.code or 'NL'
+        )
         data = {
             'merchantAccount': provider_sudo.adyen_merchant_account,
             'amount': formatted_amount,
-            'countryCode': partner_sudo.country_id.code or None,  # ISO 3166-1 alpha-2 (e.g.: 'BE')
+            'countryCode': partner_country_code,  # ISO 3166-1 alpha-2 (e.g.: 'BE')
             'shopperLocale': lang_code,  # IETF BCP 47 language tag (e.g.: 'fr-BE')
             'shopperReference': shopper_reference,
             'channel': 'Web',
@@ -56,6 +59,7 @@ class AdyenController(http.Controller):
             endpoint='/paymentMethods', payload=data, method='POST'
         )
         _logger.info("paymentMethods request response:\n%s", pprint.pformat(response_content))
+        response_content['country_code'] = partner_country_code
         return response_content
 
     @http.route('/payment/adyen/payments', type='json', auth='public')
@@ -86,12 +90,16 @@ class AdyenController(http.Controller):
         # Prepare the payment request to Adyen
         provider_sudo = request.env['payment.provider'].sudo().browse(provider_id).exists()
         tx_sudo = request.env['payment.transaction'].sudo().search([('reference', '=', reference)])
+        partner_country_code = (
+            tx_sudo.partner_country_id.code or provider_sudo.company_id.country_id.code or 'NL'
+        )
         data = {
             'merchantAccount': provider_sudo.adyen_merchant_account,
             'amount': {
                 'value': converted_amount,
                 'currency': request.env['res.currency'].browse(currency_id).name,  # ISO 4217
             },
+            'countryCode': partner_country_code,  # ISO 3166-1 alpha-2 (e.g.: 'BE')
             'reference': reference,
             'paymentMethod': payment_method,
             'shopperReference': provider_sudo._adyen_compute_shopper_reference(partner_id),
@@ -102,8 +110,10 @@ class AdyenController(http.Controller):
             'shopperName': adyen_utils.format_partner_name(tx_sudo.partner_name),
             'telephoneNumber': tx_sudo.partner_phone or "",
             'storePaymentMethod': tx_sudo.tokenize,  # True by default on Adyen side
-            'additionalData': {
-                'authenticationData.threeDSRequestData.nativeThreeDS': True,
+            'authenticationData': {
+                'threeDSRequestData': {
+                    'nativeThreeDS': 'preferred',
+                }
             },
             'channel': 'web',  # Required to support 3DS
             'origin': provider_sudo.get_base_url(),  # Required to support 3DS
@@ -116,6 +126,11 @@ class AdyenController(http.Controller):
                 f'/payment/adyen/return?merchantReference={reference}'
             ),
             **adyen_utils.include_partner_addresses(tx_sudo),
+            'lineItems': [{
+                'amountIncludingTax': converted_amount,
+                'quantity': '1',
+                'description': reference,
+            }],
         }
 
         # Force the capture delay on Adyen side if the provider is not configured for capturing

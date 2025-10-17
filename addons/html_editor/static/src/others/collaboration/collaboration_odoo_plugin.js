@@ -633,7 +633,7 @@ export class CollaborationOdooPlugin extends Plugin {
         // different history, we should not apply it.
         this.historyShareId = Math.floor(Math.random() * Math.pow(2, 52)).toString();
 
-        const lastStepId = content && this.getLastHistoryStepId(content);
+        const lastStepId = content && content.match(/data-last-history-steps="([\d,]+)"/)?.[1];
         if (lastStepId) {
             this.dependencies.collaboration.setInitialBranchStepId(lastStepId);
         }
@@ -739,10 +739,15 @@ export class CollaborationOdooPlugin extends Plugin {
         if (!applied) {
             return;
         }
-        this.dependencies.selection.setSelection({
-            anchorNode: this._getNodeFromIndexPath(anchorNodeIndexPath),
-            anchorOffset,
-        });
+        const anchorNode = this._getNodeFromIndexPath(anchorNodeIndexPath);
+        if (
+            this.dependencies.selection.isSelectionInEditable({ anchorNode, focusNode: anchorNode })
+        ) {
+            this.dependencies.selection.setSelection({
+                anchorNode,
+                anchorOffset,
+            });
+        }
         this.historySyncFinished = true;
         // In case there are steps received in the meantime, process them.
         if (this.historyStepsBuffer.length) {

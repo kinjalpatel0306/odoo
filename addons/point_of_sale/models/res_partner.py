@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class ResPartner(models.Model):
@@ -31,7 +32,8 @@ class ResPartner(models.Model):
     def _load_pos_data_fields(self, config_id):
         return [
             'id', 'name', 'street', 'city', 'state_id', 'country_id', 'vat', 'lang', 'phone', 'zip', 'mobile', 'email',
-            'barcode', 'write_date', 'property_account_position_id', 'property_product_pricelist', 'parent_name', 'contact_address'
+            'barcode', 'write_date', 'property_account_position_id', 'property_product_pricelist', 'parent_name', 'contact_address',
+            'company_type',
         ]
 
     def _compute_pos_order(self):
@@ -69,3 +71,8 @@ class ResPartner(models.Model):
             **super().open_commercial_entity(),
             **({'target': 'new'} if self.env.context.get('target') == 'new' else {}),
         }
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_if_pos_no_orders(self):
+        if any(self.mapped('pos_order_ids')):
+            raise ValidationError(_('You cannot delete a customer that has point of sales orders. You can archive it instead.'))

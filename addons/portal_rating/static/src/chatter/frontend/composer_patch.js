@@ -17,21 +17,33 @@ patch(Composer.prototype, {
         return super.allowUpload && !this.props.composer.portalComment;
     },
 
-    editMessage() {
+    async editMessage() {
         if (this.props.composer.portalComment) {
-            this.savePublisherComment();
+            await this.savePublisherComment();
             return;
         }
-        super.editMessage();
+        await super.editMessage();
     },
 
     async savePublisherComment() {
+        if (!this.state.active) {
+            return;
+        }
+        this.state.active = false;
         const data = await rpc("/website/rating/comment", {
             rating_id: this.message.rating.id,
             publisher_comment: this.props.composer.text.trim(),
         });
         this.message.rating = data;
         this.props.onPostCallback();
+    },
+
+    get canProcessMessage() {
+        return super.canProcessMessage || (this.message && this.message.rating_value);
+    },
+
+    get askDeleteFromEdit() {
+        return super.askDeleteFromEdit && !this.message.rating_value;
     },
 
     onMoveStar(ev) {

@@ -143,24 +143,24 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
     def _request_handler(cls, s: Session, r: PreparedRequest, /, **kw):
         response = Response()
         response.status_code = 200
-        if r.url.endswith('iso6523-actorid-upis%3A%3A0208%3A0477472701'):
+        url = r.path_url.lower()
+        if url.endswith(('iso6523-actorid-upis%3A%3A0208%3A0477472701'.lower(), 'iso6523-actorid-upis%3A%3A9925%3ABE0477472701'.lower())):
             response._content = b"""<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n<smp:ServiceGroup xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:id="http://busdox.org/transport/identifiers/1.0/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:smp="http://busdox.org/serviceMetadata/publishing/1.0/"><id:ParticipantIdentifier scheme="iso6523-actorid-upis">0208:0477472701</id:ParticipantIdentifier>'
             '<smp:ServiceMetadataReferenceCollection><smp:ServiceMetadataReference href="https://iap-services.odoo.com/iso6523-actorid-upis%3A%3A0208%3A0477472701/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Afdc%3Apeppol.eu%3A2017%3Apoacc%3Abilling%3A3.0%3A%3A2.1"/>'
             '</smp:ServiceMetadataReferenceCollection></smp:ServiceGroup>"""
             return response
-        if r.url.endswith('iso6523-actorid-upis%3A%3A0208%3A3141592654'):
+        if url.endswith(('iso6523-actorid-upis%3A%3A0208%3A3141592654'.lower(), 'iso6523-actorid-upis%3A%3A9925%3ABE3141592654'.lower())):
             response.status_code = 404
             return response
-        if r.url.endswith('iso6523-actorid-upis%3A%3A0208%3A2718281828'):
+        if url.endswith(('iso6523-actorid-upis%3A%3A0208%3A2718281828'.lower(), 'iso6523-actorid-upis%3A%3A9925%3ABE2718281828'.lower())):
             response._content = b"""<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n<smp:ServiceGroup xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:id="http://busdox.org/transport/identifiers/1.0/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:smp="http://busdox.org/serviceMetadata/publishing/1.0/"><id:ParticipantIdentifier scheme="iso6523-actorid-upis">0208:2718281828</id:ParticipantIdentifier>
             '<smp:ServiceMetadataReferenceCollection><smp:ServiceMetadataReference href="https://iap-services.odoo.com/iso6523-actorid-upis%3A%3A0208%3A0477472701/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Afdc%3Apeppol.eu%3A2017%3Apoacc%3Abilling%3A3.0%3A%3A2.1"/>'
             '</smp:ServiceMetadataReferenceCollection></smp:ServiceGroup>"""
             return response
-        if r.url.endswith('iso6523-actorid-upis%3A%3A0198%3Adk16356706'):
+        if url.endswith('iso6523-actorid-upis%3A%3A0198%3Adk16356706'.lower()):
             response._content = b'<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n<smp:ServiceGroup xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:id="http://busdox.org/transport/identifiers/1.0/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:smp="http://busdox.org/serviceMetadata/publishing/1.0/"><id:ParticipantIdentifier scheme="iso6523-actorid-upis">0198:dk16356706</id:ParticipantIdentifier></smp:ServiceGroup>'
             return response
 
-        url = r.path_url
         body = json.loads(r.body)
         if url == '/api/peppol/1/send_document':
             if not body['params']['documents']:
@@ -191,6 +191,11 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
             {
                 'mimetype': 'application/pdf',
                 'name': 'INV_2023_00001.pdf',
+                'placeholder': True,
+            },
+            {
+                'mimetype': 'application/xml',
+                'name': 'INV_2023_00001_ubl_bis3.xml',
                 'placeholder': True,
             },
         ])
@@ -379,12 +384,12 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
             'invoice_sending_method': 'peppol',
         }])
         # but not valid for company 2
-        new_partner.with_company(company_2).peppol_verification_state = False
+        new_partner.with_company(company_2).invoice_edi_format = 'nlcius'
         self.assertRecordValues(new_partner.with_company(company_2), [{
-            'peppol_verification_state': False,
+            'peppol_verification_state': 'not_valid_format',
             'peppol_eas': '0208',
             'peppol_endpoint': '0477472701',
-            'invoice_edi_format': False,
+            'invoice_edi_format': 'nlcius',
             'invoice_sending_method': 'peppol',
         }])
         move_1 = self.create_move(new_partner)
@@ -395,10 +400,10 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
         wizard = self.create_send_and_print(move_1 + move_2 + move_3)
         wizard.action_send_and_print()
         self.assertEqual((move_1 + move_2 + move_3).mapped('is_being_sent'), [True, True, True])
-        # the cron is ran asynchronously and should be agnostic from the current self.env.company
+        # the cron is run asynchronously and should be agnostic from the current self.env.company
         self.env.ref('account.ir_cron_account_move_send').with_company(company_2).method_direct_trigger()
         # only move 1 & 2 should be processed, move_3 is related to an invalid partner (with regard to company_2) thus should fail to send
-        self.assertEqual((move_1 + move_2 + move_3).mapped('peppol_move_state'), ['processing', 'processing', 'skipped'])
+        self.assertEqual((move_1 + move_2 + move_3).mapped('peppol_move_state'), ['processing', 'processing', 'error'])
 
     def test_available_peppol_sending_methods(self):
         company_us = self.setup_other_company()['company']  # not a valid Peppol country
@@ -410,3 +415,74 @@ class TestPeppolMessage(TestAccountMoveSendCommon):
         self.assertFalse('facturx' in self.valid_partner.available_peppol_edi_formats)
         self.valid_partner.invoice_sending_method = 'email'
         self.assertTrue('facturx' in self.valid_partner.available_peppol_edi_formats)
+
+    def test_peppol_default_ubl_bis3_single(self):
+        """In single invoice sending, if a partner is set on 'by Peppol' sending method,
+        and has no specific e-invoice format, we should default on BIS3
+        and generate invoices without errors.
+        """
+        self.valid_partner.invoice_sending_method = 'peppol'
+        self.valid_partner.invoice_edi_format = False
+
+        move = self.create_move(self.valid_partner)
+        move.action_post()
+        wizard = self.create_send_and_print(move)
+        self.assertEqual(wizard.invoice_edi_format, 'ubl_bis3')
+        wizard.action_send_and_print()
+        self.assertTrue(move.ubl_cii_xml_id)
+        self.assertEqual(move.peppol_move_state, 'processing')
+
+    def test_peppol_default_ubl_bis3_multi(self):
+        """In multi-sending, if a partner is set on 'by Peppol' sending method, and
+        has no specific e-invoice format, we should default on BIS3
+        and generate invoices without errors.
+        """
+        self.valid_partner.invoice_sending_method = 'peppol'
+        self.valid_partner.invoice_edi_format = False
+
+        move_1 = self.create_move(self.valid_partner)
+        move_2 = self.create_move(self.valid_partner)
+        moves = (move_1 + move_2)
+        moves.action_post()
+        wizard = self.create_send_and_print(moves)
+        self.assertEqual(wizard.summary_data, {
+            'peppol': {'count': 2, 'label': 'by Peppol'},
+        })
+        wizard.action_send_and_print()
+        self.env.ref('account.ir_cron_account_move_send').method_direct_trigger()
+
+        self.assertEqual(len(moves.ubl_cii_xml_id), 2)
+        self.assertEqual(moves.mapped('peppol_move_state'), ['processing', 'processing'])
+
+    def test_silent_error_while_creating_xml(self):
+        """When in multi/async mode, the generation of XML can fail silently (without raising).
+        This needs to be reflected as an error and put the move in Peppol Error state.
+        """
+        def mocked_export_invoice_constraints(self, invoice, vals):
+            return {'test_error_key': 'test_error_description'}
+
+        self.valid_partner.invoice_edi_format = 'ubl_bis3'
+        move_1 = self.create_move(self.valid_partner)
+        move_2 = self.create_move(self.valid_partner)
+        (move_1 + move_2).action_post()
+
+        wizard = self.create_send_and_print(move_1 + move_2)
+        with patch(
+            'odoo.addons.account_edi_ubl_cii.models.account_edi_xml_ubl_20.AccountEdiXmlUBL20._export_invoice_constraints',
+            mocked_export_invoice_constraints
+        ):
+            wizard.action_send_and_print()
+            self.env.ref('account.ir_cron_account_move_send').method_direct_trigger()
+        self.assertEqual(move_1.peppol_move_state, 'error')
+
+    def test_compute_available_peppol_eas_multi_partner(self):
+        """Check _compute_available_peppol_eas works with multiple partners"""
+
+        # Create multiple partners
+        partners = self.env['res.partner'].create([
+            {'name': 'Partner A'},
+            {'name': 'Partner B'},
+        ])
+        partners._compute_available_peppol_eas()
+        for partner in partners:
+            self.assertFalse('odemo' in partner.available_peppol_eas)

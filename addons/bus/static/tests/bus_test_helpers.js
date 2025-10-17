@@ -35,8 +35,20 @@ import { patch } from "@web/core/utils/patch";
 //-----------------------------------------------------------------------------
 
 patch(busService, {
-    _onMessage(id, type, payload) {
-        registerDebugInfo("bus:", id, type, payload);
+    _onMessage(env, id, type, payload) {
+        // Generic handlers (namely: debug info)
+        if (type in busMessageHandlers) {
+            busMessageHandlers[type](env, id, payload);
+        } else {
+            registerDebugInfo("bus message", { id, type, payload });
+        }
+
+        // Notifications
+        if (!busNotifications.has(env)) {
+            busNotifications.set(env, []);
+            after(() => busNotifications.clear());
+        }
+        busNotifications.get(env).push({ id, type, payload });
     },
 });
 
@@ -52,6 +64,11 @@ class LockedWebSocket extends WebSocket {
         });
     }
 }
+
+/** @type {Record<string, (env: OdooEnv, id: string, payload: any) => any>} */
+const busMessageHandlers = {};
+/** @type {Map<OdooEnv, { id: number, type: string, payload: NotificationPayload }[]>} */
+const busNotifications = new Map();
 
 const viewsRegistry = registry.category("bus.view.archs");
 viewsRegistry.category("activity").add(
@@ -78,11 +95,21 @@ viewsRegistry.category("form").add(
 
 // should be enough to decide whether or not notifications/channel
 // subscriptions... are received.
-const TIMEOUT = 500;
+const TIMEOUT = 2000;
 
 //-----------------------------------------------------------------------------
 // Exports
 //-----------------------------------------------------------------------------
+
+/**
+ * Useful to display debug information about bus events in tests.
+ *
+ * @param {string} type
+ * @param {(env: OdooEnv, id: string, payload: any) => any} handler
+ */
+export function addBusMessageHandler(type, handler) {
+    busMessageHandlers[type] = handler;
+}
 
 /**
  * Patches the bus service to add given event listeners immediatly when it starts.
@@ -160,17 +187,12 @@ export function waitForChannels(channels, { operation = "add" } = {}) {
         }
         clearTimeout(failTimeout);
         offWebsocketEvent();
-        const message = (pass, r) =>
+        const message = (pass) =>
             pass
-                ? [r`Channel(s)`, channels, operation === "add" ? r`added` : r`deleted`]
-                : [
-                      r`Waited`,
-                      TIMEOUT,
-                      r`ms for`,
-                      channels,
-                      r`to be`,
-                      operation === "add" ? r`added` : r`deleted`,
-                  ];
+                ? `Channel(s) ${channels} ${operation === "add" ? `added` : `deleted`}`
+                : `Waited ${TIMEOUT}ms for ${channels} to be ${
+                      operation === "add" ? `added` : `deleted`
+                  }`;
         expect(success).toBe(true, { message });
         if (success) {
             def.resolve();

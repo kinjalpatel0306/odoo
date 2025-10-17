@@ -94,12 +94,15 @@ class ReturnPicking(models.TransientModel):
         return res
 
     picking_id = fields.Many2one('stock.picking')
+    picking_type_code = fields.Selection(related='picking_id.picking_type_code', readonly=True)
     product_return_moves = fields.One2many('stock.return.picking.line', 'wizard_id', 'Moves', compute='_compute_moves_locations', precompute=True, readonly=False, store=True)
     company_id = fields.Many2one(related='picking_id.company_id')
 
     @api.depends('picking_id')
     def _compute_moves_locations(self):
         for wizard in self:
+            if not wizard.picking_id:
+                continue
             product_return_moves = [Command.clear()]
             if not wizard.picking_id._can_return():
                 raise UserError(_("You may only return Done pickings."))
@@ -115,10 +118,9 @@ class ReturnPicking(models.TransientModel):
                 product_return_moves_data = dict(product_return_moves_data_tmpl)
                 product_return_moves_data.update(wizard._prepare_stock_return_picking_line_vals_from_move(move))
                 product_return_moves.append(Command.create(product_return_moves_data))
-            if wizard.picking_id and not product_return_moves:
+            if not product_return_moves:
                 raise UserError(_("No products to return (only lines in Done state and not fully returned yet can be returned)."))
-            if wizard.picking_id:
-                wizard.product_return_moves = product_return_moves
+            wizard.product_return_moves = product_return_moves
 
     @api.model
     def _prepare_stock_return_picking_line_vals_from_move(self, stock_move):
@@ -130,19 +132,22 @@ class ReturnPicking(models.TransientModel):
         }
 
     def _prepare_picking_default_values(self):
-        location = self.picking_id.location_dest_id
-        r_type = self.picking_id.picking_type_id.return_picking_type_id
-        if r_type and r_type.code == 'incoming':
-            location_dest = r_type.default_location_dest_id
+        return self._prepare_picking_default_values_based_on(self.picking_id)
+
+    def _prepare_picking_default_values_based_on(self, picking):
+        location = picking.location_dest_id
+        return_type = picking.picking_type_id.return_picking_type_id
+        if return_type and return_type.code == 'incoming':
+            location_dest = return_type.default_location_dest_id
         else:
-            location_dest = self.picking_id.location_id
+            location_dest = picking.location_id
 
         vals = {
             'move_ids': [],
-            'picking_type_id': self.picking_id.picking_type_id.return_picking_type_id.id or self.picking_id.picking_type_id.id,
+            'picking_type_id': return_type.id or picking.picking_type_id.id,
             'state': 'draft',
-            'return_id': self.picking_id.id,
-            'origin': _("Return of %(picking_name)s", picking_name=self.picking_id.name),
+            'return_id': picking.id,
+            'origin': _("Return of %(picking_name)s", picking_name=picking.name),
             'location_id': location.id,
             'location_dest_id': location_dest.id,
         }
@@ -170,6 +175,27 @@ class ReturnPicking(models.TransientModel):
         new_picking.action_confirm()
         new_picking.action_assign()
         return new_picking
+
+    def _create_exchange(self, return_picking):
+        # Create a new picking for exchanged products
+        exchange_picking = return_picking.copy(self._prepare_picking_default_values_based_on(return_picking))
+        exchange_picking.user_id = False
+        exchange_picking.message_post_with_source(
+            'mail.message_origin_link',
+            render_values={'self': exchange_picking, 'origin': return_picking},
+            subtype_xmlid='mail.mt_note',
+        )
+        for return_line in self.product_return_moves:
+            return_line._process_line(exchange_picking)
+
+        # The exchange moves should be independent of their origin moves
+        exchange_picking.move_ids.write({
+            'origin_returned_move_id': False,
+            'move_orig_ids': False,
+        })
+        exchange_picking.action_confirm()
+        exchange_picking.action_assign()
+        return exchange_picking
 
     def action_create_returns(self):
         self.ensure_one()
@@ -204,6 +230,13 @@ class ReturnPicking(models.TransientModel):
         """ Create a return for the active picking, then create a return of
         the return for the exchange picking and open it."""
         action = self.action_create_returns()
+        # For receipts: ignore the procurement and create an exchange directly
+        if self.picking_id.picking_type_id.code == 'incoming':
+            return_picking = self.env['stock.picking'].browse([action['res_id']])
+            exchange_picking = self._create_exchange(return_picking)
+            # Set the exchange as a return of the return
+            exchange_picking.return_id = return_picking
+            return action
 
         proc_list = []
         for line in self.product_return_moves:

@@ -26,7 +26,7 @@
         // `web/lib/fullcalendar/core/main.css` gives events with links and draggable events a hand mouse pointer,
         // but doesn't take into account that events have popovers.
         cursor: pointer;
-        --fc-event-text-color: $body-color;
+        --fc-event-text-color: #{$body-color};
         --fc-event-bg-color: #{$o-view-background-color};
         overflow: hidden;
 
@@ -174,10 +174,28 @@
                 max-height: 500px;
                 overflow: auto;
             }
+
+            &.o_calendar_disabled {
+                background-color: $gray-200;
+            }
         }
 
         .o_calendar_disabled {
             background-color: rgba($gray-200, .5);
+        }
+
+        .fc-daygrid-day-bottom {
+            display: flex;
+            justify-content: center;
+
+            .fc-more-link {
+                color: $link-color;
+                cursor: pointer;
+
+                &:hover {
+                    background: none;
+                }
+            }
         }
 
         // ======  Specific agenda types ======
@@ -448,8 +466,8 @@
                         content: "";
                         z-index: -1;
                         display: none;
-                        @include o_position-absolute($top: 0%, $left: 50%);
-                        transform: translateX(-50%);
+                        @include o_position-absolute($top: 50%, $left: 50%);
+                        transform: translate(-50%, -50%);
                         aspect-ratio: 1/1;
                         height: 100%;
                         border-radius: 100%;
@@ -474,15 +492,6 @@
 
             .fc-bg .fc-day-today:not(.o_calendar_disabled) {
                 background: none;
-            }
-
-            .fc-more-cell {
-                text-align: center;
-
-                .fc-more-link {
-                    color: $link-color;
-                    cursor: pointer;
-                }
             }
 
             .fc-event {
@@ -537,6 +546,10 @@
                                 display: block;
                             }
                         }
+
+                        .fc-daygrid-day-number:before {
+                            height: 120%;
+                        }
                     }
                 }
             }
@@ -584,7 +597,10 @@
 
                     .fc-daygrid-body tr {
                         .fc-daygrid-day-frame {
+                            display: flex;
+                            place-content: center;
                             min-height: 2rem;
+                            line-height: 1;
                         }
 
                         .o-fc-week {

@@ -3,6 +3,10 @@
 import { DEFAULT_EVENT_TYPES } from "../hoot_utils";
 import { generateSeed } from "../mock/math";
 
+/**
+ * @typedef {keyof typeof FILTER_SCHEMA} SearchFilter
+ */
+
 //-----------------------------------------------------------------------------
 // Global
 //-----------------------------------------------------------------------------
@@ -21,23 +25,27 @@ const {
  * @param {T} schema
  * @returns {{ [key in keyof T]: ReturnType<T[key]["parse"]> }}
  */
-const getSchemaDefaults = (schema) =>
-    $fromEntries($entries(schema).map(([key, value]) => [key, value.default]));
+function getSchemaDefaults(schema) {
+    return $fromEntries($entries(schema).map(([key, value]) => [key, value.default]));
+}
 
 /**
  * @template {Record<string, any>} T
  * @param {T} schema
  * @returns {(keyof T)[]}
  */
-const getSchemaKeys = (schema) => $keys(schema);
+function getSchemaKeys(schema) {
+    return $keys(schema);
+}
 
 /**
  * @template T
  * @param {(values: string[]) => T} parse
  * @returns {(valueIfEmpty: T) => (values: string[]) => T}
  */
-const makeParser = (parse) => (valueIfEmpty) => (values) =>
-    values.length ? parse(values) : valueIfEmpty;
+function makeParser(parse) {
+    return (valueIfEmpty) => (values) => values.length ? parse(values) : valueIfEmpty;
+}
 
 const parseBoolean = makeParser(([value]) => value === "true");
 
@@ -135,6 +143,16 @@ export const CONFIG_SCHEMA = {
         parse: parseBoolean(true),
     },
     /**
+     * Artifical delay introduced for each network call. It can be a fixed integer,
+     * or an integer range (in the form "min-max") to generate a random delay between
+     * "min" and "max".
+     * @default 0
+     */
+    networkDelay: {
+        default: "0",
+        parse: parseString("0"),
+    },
+    /**
      * Removes the safety of 'try .. catch' statements around each test's run function
      * to let errors bubble to the browser.
      * @default false
@@ -208,12 +226,12 @@ export const FILTER_SCHEMA = {
         parse: parseString(""),
     },
     /**
-     * IDs of the suites to run exclusively. The ID of a suite is generated deterministically
-     * based on its full name.
+     * IDs of the suites OR tests to run exclusively. The ID of a job is generated
+     * deterministically based on its full name.
      * @default []
      */
-    suite: {
-        aliases: ["suites"],
+    id: {
+        aliases: ["ids"],
         default: [],
         parse: parseStringArray([]),
     },
@@ -223,16 +241,6 @@ export const FILTER_SCHEMA = {
      */
     tag: {
         aliases: ["tags"],
-        default: [],
-        parse: parseStringArray([]),
-    },
-    /**
-     * IDs of the tests to run exclusively. The ID of a test is generated deterministically
-     * based on its full name.
-     * @default []
-     */
-    test: {
-        aliases: ["tests"],
         default: [],
         parse: parseStringArray([]),
     },

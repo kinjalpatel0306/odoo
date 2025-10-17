@@ -4,6 +4,7 @@
 import logging
 import pytz
 import textwrap
+import urllib.parse
 
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
@@ -623,9 +624,11 @@ class EventEvent(models.Model):
         sold_out_events = []
         for event in self:
             if event.seats_limited and event.seats_max and event.seats_available < minimal_availability:
-                sold_out_events.append(
-                    (_('- "%(event_name)s": Missing %(nb_too_many)i seats.',
-                        event_name=event.name, nb_too_many=-event.seats_available)))
+                sold_out_events.append(_(
+                    '- "%(event_name)s": Missing %(nb_too_many)i seats.',
+                    event_name=event.name,
+                    nb_too_many=minimal_availability - event.seats_available,
+                ))
         if sold_out_events:
             raise ValidationError(_('There are not enough seats available for:')
                                   + '\n%s\n' % '\n'.join(sold_out_events))
@@ -738,6 +741,10 @@ class EventEvent(models.Model):
         self.ensure_one()
         description = html_to_inner_content(self.description)
         return textwrap.shorten(description, 1900)
+
+    def _get_external_description_url_encoded(self):
+        """Get a url-encoded version of the description for mail templates."""
+        return urllib.parse.quote_plus(self._get_external_description())
 
     def _get_ics_file(self):
         """ Returns iCalendar file for the event invitation.

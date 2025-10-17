@@ -1,10 +1,11 @@
 /** @odoo-module */
 
-import { tick } from "@odoo/hoot-dom";
+import { delay, tick } from "@odoo/hoot-dom";
 import {
     mockedCancelAnimationFrame,
     mockedRequestAnimationFrame,
 } from "@web/../lib/hoot-dom/helpers/time";
+import { isInstanceOf } from "../../hoot-dom/hoot_dom_utils";
 import { makeNetworkLogger } from "../core/logger";
 import { ensureArray, MIME_TYPE, MockEventTarget } from "../hoot_utils";
 import { getSyncValue, MockBlob, setSyncValue } from "./sync_values";
@@ -31,7 +32,7 @@ const {
     document,
     fetch,
     Headers,
-    Math: { max: $max, min: $min },
+    Math: { floor: $floor, max: $max, min: $min, random: $random },
     Object: { assign: $assign, create: $create, entries: $entries },
     ProgressEvent,
     Request,
@@ -49,7 +50,7 @@ const {
  * @param {EventTarget} target
  * @param {CloseEventInit} eventInit
  */
-const dispatchClose = (target, eventInit) => {
+function dispatchClose(target, eventInit) {
     if (!isOpen(target)) {
         return;
     }
@@ -57,14 +58,14 @@ const dispatchClose = (target, eventInit) => {
     eventInit.code ??= 1000;
     eventInit.wasClean ??= eventInit.code === 1000;
     target.dispatchEvent(new CloseEvent("close", eventInit));
-};
+}
 
 /**
  * @param {EventTarget} target
  * @param {any} data
  * @param {Transferable[] | StructuredSerializeOptions} [transfer]
  */
-const dispatchMessage = async (target, data, transfer) => {
+async function dispatchMessage(target, data, transfer) {
     const targets = [];
     if (transfer) {
         targets.push(...(transfer?.transfer || transfer));
@@ -83,30 +84,51 @@ const dispatchMessage = async (target, data, transfer) => {
     if (dispatched) {
         await tick();
     }
-};
+}
 
 /**
  * @param {...NetworkInstance} instances
  */
-const isOpen = (...instances) => instances.every((i) => openNetworkInstances.has(i));
+function isOpen(...instances) {
+    return instances.every((i) => openNetworkInstances.has(i));
+}
 
 /**
  * @param {...NetworkInstance} instances
  */
-const markClosed = (...instances) => {
+function markClosed(...instances) {
     for (const instance of instances) {
         openNetworkInstances.delete(instance);
     }
-};
+}
 
 /**
  * @param {NetworkInstance} instance
  * @param {Promise<any> | null} [promise]
  */
-const markOpen = (instance) => {
+function markOpen(instance) {
     openNetworkInstances.add(instance);
     return instance;
-};
+}
+
+/**
+ * @param {number} min
+ * @param {number} [max]
+ */
+function parseNetworkDelay(min, max) {
+    if (min <= 0) {
+        return null;
+    }
+    if (max) {
+        if (max < min) {
+            [min, max] = [max, min];
+        }
+        const diff = max - min;
+        return () => delay($floor($random() * diff + min));
+    } else {
+        return () => delay(min);
+    }
+}
 
 const DEFAULT_URL = "https://www.hoot.test/";
 const ENDLESS_PROMISE = new Promise(() => {});
@@ -120,6 +142,8 @@ const R_SEMICOLON = /\s*;\s*/;
 /** @type {Set<NetworkInstance>} */
 const openNetworkInstances = new Set();
 
+/** @type {ReturnType<parseNetworkDelay>} */
+let getNetworkDelay = null;
 /** @type {(typeof fetch) | null} */
 let mockFetchFn = null;
 /** @type {((websocket: ServerWebSocket) => any) | null} */
@@ -139,7 +163,7 @@ export function cleanupNetwork() {
 
     // Network instances
     for (const instance of openNetworkInstances) {
-        if (instance instanceof AbortController) {
+        if (isInstanceOf(instance, AbortController)) {
             instance.abort();
         } else if (
             instance instanceof MockBroadcastChannel ||
@@ -186,6 +210,10 @@ export async function mockedFetch(input, init) {
 
     logRequest(() => (typeof init.body === "string" ? JSON.parse(init.body) : init));
 
+    if (getNetworkDelay) {
+        await getNetworkDelay();
+    }
+
     let failed = false;
     let result;
     try {
@@ -205,9 +233,9 @@ export async function mockedFetch(input, init) {
 
     /** @type {Headers} */
     let headers;
-    if (result && result.headers instanceof Headers) {
+    if (result && isInstanceOf(result.headers, Headers)) {
         headers = result.headers;
-    } else if (init.headers instanceof Headers) {
+    } else if (isInstanceOf(init.headers, Headers)) {
         headers = init.headers;
     } else {
         headers = new Headers(init.headers);
@@ -224,7 +252,7 @@ export async function mockedFetch(input, init) {
         return result;
     }
 
-    if (result instanceof Response) {
+    if (isInstanceOf(result, Response)) {
         // Actual fetch
         logResponse(() => "(go to network tab for request content)");
         return result;
@@ -237,7 +265,7 @@ export async function mockedFetch(input, init) {
     if (!contentType) {
         if (typeof result === "string") {
             contentType = MIME_TYPE.text;
-        } else if (result instanceof Blob) {
+        } else if (isInstanceOf(result, Blob)) {
             contentType = MIME_TYPE.blob;
         } else {
             contentType = MIME_TYPE.json;
@@ -312,6 +340,13 @@ export function mockWebSocket(onWebSocketConnected) {
  */
 export function mockWorker(onWorkerConnected) {
     mockWorkerConnection = onWorkerConnected;
+}
+
+/**
+ * @param {Parameters<parseNetworkDelay>} args
+ */
+export function throttleNetwork(...args) {
+    getNetworkDelay = parseNetworkDelay(...args);
 }
 
 export class MockBroadcastChannel extends BroadcastChannel {
@@ -763,7 +798,7 @@ export class MockWebSocket extends MockEventTarget {
             return;
         }
         this._readyState = WebSocket.CLOSING;
-        dispatchClose(this, { code, reason });
+        tick().then(() => dispatchClose(this, { code, reason }));
     }
 
     /** @type {WebSocket["send"]} */

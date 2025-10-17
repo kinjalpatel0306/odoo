@@ -73,13 +73,14 @@ class PeppolRegistration(models.TransientModel):
 
     @api.onchange('phone_number')
     def _onchange_phone_number(self):
+        self.env['res.company']._check_phonenumbers_import()
         for wizard in self:
             if wizard.phone_number:
-                wizard.company_id._sanitize_peppol_phone_number(wizard.phone_number)
+                # The `phone_number` we set is not necessarily valid (may fail `_sanitize_peppol_phone_number`)
                 with contextlib.suppress(phonenumbers.NumberParseException):
                     parsed_phone_number = phonenumbers.parse(
                         wizard.phone_number,
-                        region=self.company_id.country_code,
+                        region=wizard.company_id.country_code,
                     )
                     wizard.phone_number = phonenumbers.format_number(
                         parsed_phone_number,
@@ -108,14 +109,10 @@ class PeppolRegistration(models.TransientModel):
                     'message': _("The endpoint number might not be correct. "
                                 "Please check if you entered the right identification number."),
                 }
-            if wizard.company_id.country_code == 'BE' and wizard.peppol_eas not in (False, '0208'):
-                peppol_warnings['company_peppol_eas_warning'] = {
-                    'message': _("The recommended identification method for Belgium is your Company Registry Number."),
-                }
             if not wizard.smp_registration:
                 peppol_warnings['company_on_another_smp'] = {
                     'message': _("Your company is already registered on another Access Point for receiving invoices."
-                                 "We will register you on Odoo as a sender only.")
+                                 "We will register you as a sender only.")
                 }
             wizard.peppol_warnings = peppol_warnings or False
 
@@ -139,12 +136,8 @@ class PeppolRegistration(models.TransientModel):
 
     @api.depends('edi_user_id')
     def _compute_edi_mode(self):
-        edi_mode = self.env['ir.config_parameter'].sudo().get_param('account_peppol.edi.mode')
         for wizard in self:
-            if wizard.edi_user_id:
-                wizard.edi_mode = wizard.edi_user_id.edi_mode
-            else:
-                wizard.edi_mode = edi_mode or 'prod'
+            wizard.edi_mode = wizard.company_id._get_peppol_edi_mode()
 
     def _inverse_edi_mode(self):
         for wizard in self:
@@ -293,21 +286,18 @@ class PeppolRegistration(models.TransientModel):
         # success
         notifications = {
             'sender': {
-                'title': _('Registered as a sender.'),
                 'message': _('You can now send electronic invoices via Peppol.'),
             },
             'smp_registration': {  # TODO remove in master
-                'title': _('Registered to receive documents via Peppol.'),
-                'message': _('Your registration on Peppol network should be activated within a day. The updated status will be visible in Settings.'),
+                'message': _('Your Peppol registration will be activated soon. You can already send invoices.'),
             },
             'receiver': {
-                'title': _('Registered as a receiver.'),
                 'message': _('You can now send and receive electronic invoices via Peppol'),
             },
         }
         state = self.company_id.account_peppol_proxy_state
         return self._action_send_notification(
-            title=notifications[state]['title'],
+            title=None,
             message=notifications[state]['message'],
         )
 

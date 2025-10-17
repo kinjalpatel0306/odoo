@@ -856,9 +856,8 @@ class TestPoSBasicConfig(TestPoSCommon):
 
         def open_and_check(pos_data):
             self.config = pos_data['config']
-            self.open_new_session()
+            self.open_new_session(pos_data['amount_paid'])
             session = self.pos_session
-            session.set_opening_control(pos_data['amount_paid'], False)
             self.assertEqual(session.cash_register_balance_start, pos_data['amount_paid'])
 
         pos01_config = self.config
@@ -986,7 +985,7 @@ class TestPoSBasicConfig(TestPoSCommon):
             # Check the credit note
             self.assertTrue(return_to_invoice.account_move, 'Invoice should be created.')
             self.assertEqual(return_to_invoice.account_move.move_type, 'out_refund', 'Invoice should be a credit note.')
-            self.assertEqual(return_to_invoice.account_move.invoice_date, new_session_date, 'Invoice date should be the same as the session it is created in.')
+            self.assertEqual(return_to_invoice.account_move.invoice_date, new_session_date.date(), 'Invoice date should be the same as the session it is created in.')
             self.assertRecordValues(return_to_invoice.account_move, [{
                 'amount_untaxed': 30,
                 'amount_tax': 0,
@@ -1218,3 +1217,87 @@ class TestPoSBasicConfig(TestPoSCommon):
         self.assertFalse(pm_3.journal_id)
         self.assertTrue(pm_4)
         self.assertEqual(pm_4.journal_id.type, "bank")
+
+    def test_loading_products_with_access_right_issue(self):
+        product = self.env['product.product'].create({
+            'name': 'Product with access right issue',
+            'available_in_pos': True,
+            'type': 'consu',
+        })
+
+        self.env['ir.rule'].create({
+            'name': 'Test',
+            'model_id': self.env['ir.model']._get('product.product').id,
+            'domain_force': '[(\'id\', \'!=\', %s)]' % product.id,
+            'groups': [(4, self.env.ref('base.group_user').id)]
+        })
+
+        session = self.open_new_session()
+
+        data = session.load_data([])
+
+        self.assertNotIn(product.id, [p['id'] for p in data['product.product']['data']])
+        self.assertTrue(data['product.product']['data'])
+
+    def test_double_syncing_same_order(self):
+        """ Test that double syncing the same order doesn't create duplicates records
+        """
+        self.open_new_session()
+
+        # Create an order
+        order_data = self.create_ui_order_data([(self.product1, 1)], payments=[(self.cash_pm1, 10)], customer=self.customer, is_invoiced=True)
+        order_data['access_token'] = '0123456789'
+        res = self.env['pos.order'].sync_from_ui([order_data])
+        order_id = res['pos.order'][0]['id']
+
+        # Sync the same order again
+        res = self.env['pos.order'].sync_from_ui([order_data])
+        self.assertEqual(res['pos.order'][0]['id'], order_id, 'Syncing the same order should not create a new one')
+
+        order = self.env['pos.order'].browse(order_id)
+        self.assertEqual(order.picking_count, 1, 'Order should have one picking')
+        self.assertEqual(len(order.payment_ids), 1, 'Order should have one payment')
+        self.assertEqual(self.env['account.move'].search_count([('ref', '=', order.name)]), 1, 'Order should have one invoice')
+
+    def test_refunded_order_id(self):
+        """
+        An order containing refunded lines from two different orders is no longer allowed,
+        but some legacy records of this kind may still exist.
+        This test ensures that the refunded_order_id is correctly computed in such cases.
+        """
+        current_session = self.open_new_session()
+        orders = list(self._create_orders([
+            {'pos_order_lines_ui_args': [(self.product1, 1)]},
+            {'pos_order_lines_ui_args': [(self.product2, 1)]}
+        ]).values())
+
+        refund_order = self.env['pos.order'].create({
+            'company_id': self.env.company.id,
+            'session_id': current_session.id,
+            'lines': [
+                (0, 0, {
+                    'product_id': self.product1.id,
+                    'price_unit': -10,
+                    'qty': 1,
+                    'tax_ids': [[6, False, []]],
+                    'price_subtotal': -10,
+                    'price_subtotal_incl': -10,
+                    'refunded_orderline_id': orders[0].lines[0].id
+                }),
+                (0, 0, {
+                    'product_id': self.product2.id,
+                    'price_unit': -10,
+                    'qty': 1,
+                    'tax_ids': [[6, False, []]],
+                    'price_subtotal': -10,
+                    'price_subtotal_incl': -10,
+                    'refunded_orderline_id': orders[1].lines[0].id
+                })
+            ],
+            'amount_paid': -10,
+            'amount_total': -10,
+            'amount_tax': 0.0,
+            'amount_return': 0.0,
+        })
+
+        self.assertEqual(refund_order.refunded_order_id, orders[0])

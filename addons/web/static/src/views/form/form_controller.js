@@ -164,6 +164,7 @@ export class FormController extends Component {
 
     setup() {
         this.evaluateBooleanExpr = evaluateBooleanExpr;
+        this.actionService = useService("action");
         this.dialogService = useService("dialog");
         this.orm = useService("orm");
         this.viewService = useService("view");
@@ -223,7 +224,11 @@ export class FormController extends Component {
 
         onError((error) => {
             const suggestedCompany = error.cause?.data?.context?.suggested_company;
-            if (error.cause?.data?.name === "odoo.exceptions.AccessError" && suggestedCompany) {
+            if (
+                error.cause?.data?.name === "odoo.exceptions.AccessError" &&
+                suggestedCompany &&
+                !this.env.inDialog
+            ) {
                 this.env.pushStateBeforeReload();
                 const activeCompanyIds = this.companyService.activeCompanyIds;
                 activeCompanyIds.push(suggestedCompany.id);
@@ -424,9 +429,21 @@ export class FormController extends Component {
         const proceed = await new Promise((resolve) => {
             this.model.dialog.add(FormErrorDialog, {
                 message: error.data.message,
+                data: error.data,
                 onDiscard: () => {
                     discard();
                     resolve(true);
+                },
+                onRedirect: async ({ action, additionalContext }) => {
+                    this.allowLeavingWithoutSaving = true;
+                    try {
+                        await this.actionService.doAction(action, {
+                            additionalContext,
+                        });
+                    } finally {
+                        this.allowLeavingWithoutSaving = false;
+                        resolve(false);
+                    }
                 },
                 onStayHere: () => resolve(false),
             });
@@ -466,7 +483,7 @@ export class FormController extends Component {
     }
 
     async beforeLeave() {
-        if (this.model.root.dirty) {
+        if (this.model.root.dirty && !this.allowLeavingWithoutSaving) {
             return this.save({
                 reload: false,
                 onError: this.onSaveError.bind(this),
@@ -649,6 +666,9 @@ export class FormController extends Component {
     }
 
     saveButtonClicked(params = {}) {
+        if (!("onError" in params)) {
+            params.onError = this.onSaveError.bind(this);
+        }
         return executeButtonCallback(this.ui.activeElement, () => this.save(params));
     }
 

@@ -1,23 +1,25 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* hr
-# 
+#
 # Translators:
 # zakariya moradi, 2025
 # Tiffany Chang, 2025
-# 
+# Naser mars, 2025
+# Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2025
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-10 13:23+0000\n"
+"POT-Creation-Date: 2025-10-03 18:38+0000\n"
 "PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Tiffany Chang, 2025\n"
+"Last-Translator: Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2025\n"
 "Language-Team: Persian (https://app.transifex.com/odoo/teams/41243/fa/)\n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: fa\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. module: hr
@@ -99,28 +101,29 @@ msgid ""
 "<b>Congratulations!</b> May I recommend you to setup an <a "
 "href=\"%s\">onboarding plan?</a>"
 msgstr ""
-"<b> تبریک ! </ b> آیا میتوانم شما را  توصیه کنم به راه اندازی <a "
-"href=\"%s\"> طرح پرکننده؟ </a>"
+"<b> تبریک ! </b> آیا میتوانم شما را  توصیه کنم به راه اندازی <a href=\"%s\"> "
+"طرح پرکننده؟ </a>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_department_view_kanban
-msgid "<i class=\"fa fa-building-o\" role=\"img\" aria-label=\"Company\" title=\"Company\"/>"
-msgstr "<i class=\"fa fa-building-o\" role=\"img\" aria-label=\"شرکت\" title=\"شرکت\"/>"
+msgid ""
+"<i class=\"fa fa-building-o\" role=\"img\" aria-label=\"Company\" "
+"title=\"Company\"/>"
+msgstr ""
+"<i class=\"fa fa-building-o\" role=\"img\" aria-label=\"شرکت\" "
+"title=\"شرکت\"/>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_employee_public_view_kanban
 #: model_terms:ir.ui.view,arch_db:hr.hr_kanban_view_employees
 msgid "<i class=\"fa fa-fw me-2 fa-envelope text-primary\" title=\"Email\"/>"
-msgstr ""
-"```html\n"
-"<i class=\"fa fa-fw me-2 fa-envelope text-primary\" title=\"ایمیل\"/>\n"
-"```"
+msgstr "<i class=\"fa fa-fw me-2 fa-envelope text-primary\" title=\"Email\"/>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_employee_public_view_kanban
 #: model_terms:ir.ui.view,arch_db:hr.hr_kanban_view_employees
 msgid "<i class=\"fa fa-fw me-2 fa-phone text-primary\" title=\"Phone\"/>"
-msgstr "<i class=\"fa fa-fw me-2 fa-phone text-primary\" title=\"تلفن\"/>"
+msgstr "<i class=\"fa fa-fw me-2 fa-phone text-primary\" title=\"Phone\"/>"
 
 #. module: hr
 #: model_terms:hr.job,website_description:hr.job_ceo
@@ -141,7 +144,7 @@ msgstr ""
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_config_settings_view_form
 msgid "<span class=\"flex-shrink-0 ml8 me-2\">Sent Emails</span>"
-msgstr ""
+msgstr "<span class=\"flex-shrink-0 ml8 me-2\">ارسال ایمیل</span>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_departure_wizard_view_form
@@ -149,24 +152,24 @@ msgid ""
 "<span class=\"o_form_label o_hr_form_label cursor-default\">Close "
 "Activities</span>"
 msgstr ""
-"<span class=\"o_form_label o_hr_form_label cursor-default\">بستن "
-"فعالیت‌ها</span>"
+"<span class=\"o_form_label o_hr_form_label cursor-default\">بستن فعالیت‌ها</"
+"span>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_departure_wizard_view_form
 msgid ""
-"<span class=\"o_form_label o_hr_form_label cursor-default\">Detailed "
-"Reason</span>"
+"<span class=\"o_form_label o_hr_form_label cursor-default\">Detailed Reason</"
+"span>"
 msgstr ""
 "<span class=\"o_form_label o_hr_form_label cursor-default\">دلیل دقیق</span>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_departure_wizard_view_form
-msgid "<span class=\"o_form_label o_hr_form_label cursor-default\">HR Info</span>"
+msgid ""
+"<span class=\"o_form_label o_hr_form_label cursor-default\">HR Info</span>"
 msgstr ""
-"```html\n"
-"<span class=\"o_form_label o_hr_form_label cursor-default\">اطلاعات منابع انسانی</span>\n"
-"```"
+"<span class=\"o_form_label o_hr_form_label cursor-default\">اطلاعات منابع "
+"انسانی</span>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_users_view_form_profile
@@ -187,7 +190,7 @@ msgstr "<span class=\"o_stat_text\">متصل شده از</span>"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form_smartbutton_inherited
 msgid "<span class=\"o_stat_text\">Contacts</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">مخاطبین</span>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_partner_view_form
@@ -204,9 +207,7 @@ msgstr "<span class=\"o_stat_text\">کارمند</span>"
 #: model_terms:hr.job,job_details:hr.job_trainee
 msgid "<span class=\"text-muted small\">Days to get an Offer</span>"
 msgstr ""
-"```html\n"
-"<span class=\"text-muted small\">روزهایی که می‌توان پیشنهاد دریافت کرد</span>\n"
-"```"
+"<span class=\"text-muted small\">روزهایی که می‌توان پیشنهاد دریافت کرد</span>"
 
 #. module: hr
 #: model_terms:hr.job,job_details:hr.job_ceo
@@ -228,10 +229,7 @@ msgstr "<span class=\"text-muted small\">فرآیند</span>"
 #: model_terms:hr.job,job_details:hr.job_marketing
 #: model_terms:hr.job,job_details:hr.job_trainee
 msgid "<span class=\"text-muted small\">Time to Answer</span>"
-msgstr ""
-"```html\n"
-"<span class=\"text-muted small\">زمان پاسخگویی</span>\n"
-"```"
+msgstr "<span class=\"text-muted small\">زمان پاسخگویی</span>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_department_view_kanban
@@ -463,7 +461,7 @@ msgstr "اعمال"
 #. module: hr
 #: model:hr.contract.type,name:hr.contract_type_apprenticeship
 msgid "Apprenticeship"
-msgstr ""
+msgstr "کارآموزی"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_employee_public_view_form
@@ -504,17 +502,29 @@ msgstr "بایگانی شده"
 #: model_terms:hr.job,website_description:hr.job_marketing
 #: model_terms:hr.job,website_description:hr.job_trainee
 msgid ""
-"As an employee of our company, you will <b>collaborate with each department to create and deploy\n"
-"                                disruptive products.</b> Come work at a growing company that offers great benefits with opportunities to\n"
-"                                moving forward and learn alongside accomplished leaders. We're seeking an experienced and outstanding member of staff.\n"
+"As an employee of our company, you will <b>collaborate with each department "
+"to create and deploy\n"
+"                                disruptive products.</b> Come work at a "
+"growing company that offers great benefits with opportunities to\n"
+"                                moving forward and learn alongside "
+"accomplished leaders. We're seeking an experienced and outstanding member of "
+"staff.\n"
 "                                <br><br>\n"
-"                                This position is both <b>creative and rigorous</b> by nature you need to think outside the box.\n"
-"                                We expect the candidate to be proactive and have a \"get it done\" spirit. To be successful,\n"
+"                                This position is both <b>creative and "
+"rigorous</b> by nature you need to think outside the box.\n"
+"                                We expect the candidate to be proactive and "
+"have a \"get it done\" spirit. To be successful,\n"
 "                                you will have solid solving problem skills."
 msgstr ""
-"به عنوان یک کارمند در شرکت ما، شما با هر بخش برای ایجاد و توسعه <b>محصولات پیشرو و نوآورانه همکاری خواهید کرد.</b> در شرکتی کار کنید که در حال رشد است و مزایای عالی همراه با فرصت‌هایی برای پیشرفت و یادگیری در کنار رهبران با تجربه ارائه می‌دهد. ما به دنبال یک عضو کارمند مجرب و برجسته هستیم.\n"
+"به عنوان یک کارمند در شرکت ما، شما با هر بخش برای ایجاد و توسعه <b>محصولات "
+"پیشرو و نوآورانه همکاری خواهید کرد.</b> در شرکتی کار کنید که در حال رشد است "
+"و مزایای عالی همراه با فرصت‌هایی برای پیشرفت و یادگیری در کنار رهبران با "
+"تجربه ارائه می‌دهد. ما به دنبال یک عضو کارمند مجرب و برجسته هستیم.\n"
 "                                <br><br>\n"
-"                                این موقعیت هم به <b>صورت خلاقانه و هم دقیق</b> است و شما باید خارج از چارچوب فکر کنید. ما انتظار داریم که کاندیدا روحیه‌ای پیشگیرانه داشته باشد و \"کار را انجام دهد\". برای موفقیت، شما باید مهارت‌های قوی در حل مسئله داشته باشید."
+"                                این موقعیت هم به <b>صورت خلاقانه و هم دقیق</"
+"b> است و شما باید خارج از چارچوب فکر کنید. ما انتظار داریم که کاندیدا "
+"روحیه‌ای پیشگیرانه داشته باشد و \"کار را انجام دهد\". برای موفقیت، شما باید "
+"مهارت‌های قوی در حل مسئله داشته باشید."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_mail_activity_plan_template__responsible_type
@@ -536,7 +546,7 @@ msgstr "حضور و غیاب"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Attendance/Point of Sale"
-msgstr "حضورو/نقطه فروش"
+msgstr "حضور/نقطه فروش"
 
 #. module: hr
 #: model:ir.model.fields.selection,name:hr.selection__mail_alias__alias_contact__employees
@@ -572,7 +582,7 @@ msgstr "در دسترس"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.mail_activity_plan_view_form
 msgid "Available for all Departments"
-msgstr ""
+msgstr "موجود برای تمامی بخش ها"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__avatar_1920
@@ -698,6 +708,8 @@ msgid ""
 "Categorize your Employees by type. This field also has an impact on "
 "contracts. Only Employees, Students and Trainee will have contract history."
 msgstr ""
+"کارمندان خود را بر اساس نوع دسته بندی کنید. این فیلد در قراردادها هم تاثیر "
+"دارد. فقط کارمندان، دانشجویان و کارآموزان دارای سابقه قرارداد خواهند بود."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__certificate
@@ -734,7 +746,7 @@ msgstr "دپارتمان‌های زیرمجموعه"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_department_view_kanban
 msgid "Child departments"
-msgstr ""
+msgstr "زیرمجموعه"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_users_view_form_profile
@@ -1020,11 +1032,14 @@ msgid ""
 "Define the allowed IP to be displayed as Present. In case of multiple "
 "addresses, separate them by a coma."
 msgstr ""
+"IP مجاز را برای نمایش به صورت Present تعریف کنید. در صورت وجود چندین آدرس، "
+"آنها را با کما جدا کنید."
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_config_settings_view_form
 msgid "Define the minimum number of sent emails to be displayed as Present."
 msgstr ""
+"حداقل تعداد ایمیل های ارسال شده را برای نمایش به عنوان موجود تعریف کنید."
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_employee__resource_calendar_id
@@ -1033,21 +1048,29 @@ msgid ""
 "Define the working schedule of the resource. If not set, the resource will "
 "have fully flexible working hours."
 msgstr ""
+"برنامه کاری منبع را تعریف کنید. اگر تنظیم نشود، منبع ساعت کاری کاملاً انعطاف "
+"پذیر خواهد داشت."
 
 #. module: hr
 #: model_terms:hr.job,description:hr.job_ceo
 msgid ""
-"Demonstration of different Odoo services for each client and convincing the client about functionality of the application.\n"
+"Demonstration of different Odoo services for each client and convincing the "
+"client about functionality of the application.\n"
 "The candidate should have excellent communication skills.\n"
 "Relationship building and influencing skills\n"
 "Expertise in New Client Acquisition (NCAs) and Relationship Management.\n"
 "Gathering market and customer information.\n"
-"Coordinating with the sales and support team for adopting different strategies\n"
-"Reviewing progress and identifying opportunities and new areas for development.\n"
-"Building strong relationships with clients / customers for business growth profitability.\n"
-"Keep regular interaction with key clients for better extraction and expansion."
+"Coordinating with the sales and support team for adopting different "
+"strategies\n"
+"Reviewing progress and identifying opportunities and new areas for "
+"development.\n"
+"Building strong relationships with clients / customers for business growth "
+"profitability.\n"
+"Keep regular interaction with key clients for better extraction and "
+"expansion."
 msgstr ""
-"نمایش خدمات مختلف اودو برای هر مشتری و متقاعد کردن مشتری در مورد کارایی نرم‌افزار.  \n"
+"نمایش خدمات مختلف اودو برای هر مشتری و متقاعد کردن مشتری در مورد کارایی "
+"نرم‌افزار.  \n"
 "داوطلب باید مهارت‌های ارتباطی عالی داشته باشد.  \n"
 "مهارت‌های ایجاد رابطه و تاثیرگذاری  \n"
 "تخصص در جذب مشتریان جدید (NCAs) و مدیریت روابط.  \n"
@@ -1080,7 +1103,7 @@ msgstr "دپارتمان"
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_mail_activity_plan__department_assignable
 msgid "Department Assignable"
-msgstr ""
+msgstr "دپارتمان قابل واگذاری"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department__name
@@ -1215,11 +1238,22 @@ msgstr "گواهینامه رانندگی"
 #: model_terms:hr.job,website_description:hr.job_trainee
 msgid ""
 "Each employee has a chance to see the impact of his work.\n"
-"                            You can make a real contribution to the success of the company.\n"
+"                            You can make a real contribution to the success "
+"of the company.\n"
 "                            <br>\n"
-"                            Several activities are often organized all over the year, such as weekly\n"
-"                            sports sessions, team building events, monthly drink, and much more."
+"                            Several activities are often organized all over "
+"the year, such as weekly\n"
+"                            sports sessions, team building events, monthly "
+"drink, and much more."
 msgstr ""
+"هر کارمند این شانس را دارد که تاثیر کار خود را ببیند.\n"
+"                             شما می توانید سهم واقعی در موفقیت شرکت داشته "
+"باشید.\n"
+"                            <br>\n"
+"                             چندین فعالیت‌ اغلب در طول سال سازماندهی می "
+"شود، \n"
+"                            مانند جلسات ورزشی هفتگی، رویدادهای تیم سازی، "
+"نوشیدنی ماهانه و موارد دیگر."
 
 #. module: hr
 #: model_terms:hr.job,website_description:hr.job_ceo
@@ -1311,7 +1345,7 @@ msgstr "نام کارمند"
 #. module: hr
 #: model:ir.actions.act_window,name:hr.mail_activity_plan_action
 msgid "Employee Plans"
-msgstr ""
+msgstr "برنامه های کارکنان"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_res_company__employee_properties_definition
@@ -1408,6 +1442,12 @@ msgid "Employees Tags"
 msgstr "برچسب‌های کارمندان"
 
 #. module: hr
+#. odoo-python
+#: code:addons/hr/models/hr_employee.py:0
+msgid "Employees profile"
+msgstr ""
+
+#. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_job__contract_type_id
 #: model_terms:ir.ui.view,arch_db:hr.view_job_filter
 msgid "Employment Type"
@@ -1466,6 +1506,8 @@ msgid ""
 "External user with limited access, created only for the purpose of sharing "
 "data."
 msgstr ""
+"کاربر خارجی با دسترسی محدود، که فقط برای به اشتراک گذاری داده ها ایجاد شده "
+"است."
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
@@ -1515,8 +1557,8 @@ msgid ""
 "For %(channels)s, channel_type should be 'channel' to have the department "
 "auto-subscription."
 msgstr ""
-"برای %(channels)s، نوع کانال باید 'کانال' باشد تا اشتراک‌پذیری خودکار بخش را"
-" داشته باشید."
+"برای %(channels)s، نوع کانال باید 'کانال' باشد تا اشتراک‌پذیری خودکار بخش را "
+"داشته باشید."
 
 #. module: hr
 #: model:ir.model.fields.selection,name:hr.selection__hr_employee__employee_type__freelance
@@ -1618,7 +1660,7 @@ msgstr "تنظیمات منابع انسانی"
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_manager_department_report__has_department_manager_access
 msgid "Has Department Manager Access"
-msgstr ""
+msgstr "آیا دسترسی مدیر بخش را دارد"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department__has_message
@@ -1656,13 +1698,13 @@ msgstr "کار در خانه با فاصله"
 #: model:ir.model.fields,field_description:hr.field_hr_employee__km_home_work
 #: model:ir.model.fields,field_description:hr.field_res_users__km_home_work
 msgid "Home-Work Distance in Km"
-msgstr ""
+msgstr "فاصله خانه تا محل کار بر حسب کیلومتر"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__distance_home_work_unit
 #: model:ir.model.fields,field_description:hr.field_res_users__distance_home_work_unit
 msgid "Home-Work Distance unit"
-msgstr ""
+msgstr "واحد فاصله خانه تا محل کار"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__hr_icon_display
@@ -1675,7 +1717,7 @@ msgstr "نمایش آیکون منابع انسانی"
 #. module: hr
 #: model:ir.model,name:hr.model_hr_manager_department_report
 msgid "Hr Manager Department Report"
-msgstr ""
+msgstr "گزارش بخش مدیر منابع انسانی"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__hr_presence_state
@@ -1820,14 +1862,14 @@ msgstr "موقت"
 #. module: hr
 #: model:hr.contract.type,name:hr.contract_type_part_time
 msgid "Intern"
-msgstr ""
+msgstr "کارآموز"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__is_flexible
 #: model:ir.model.fields,field_description:hr.field_hr_employee_base__is_flexible
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__is_flexible
 msgid "Is Flexible"
-msgstr ""
+msgstr "آیا منعطف است"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department__message_is_follower
@@ -1841,7 +1883,7 @@ msgstr "آیا دنبال می کند"
 #: model:ir.model.fields,field_description:hr.field_hr_employee_base__is_fully_flexible
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__is_fully_flexible
 msgid "Is Fully Flexible"
-msgstr ""
+msgstr "آیا کاملا منعطف است"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__is_manager
@@ -2013,20 +2055,20 @@ msgid ""
 "Lorem Ipsum is simply dummy text of the printing and typesetting industry. "
 "Lorem Ipsum has been the industry's standard dummy text ever since the "
 "1500s, when an unknown printer took a galley of type and scrambled it to "
-"make a type specimen book. It has survived not only five centuries, but also"
-" the leap into electronic typesetting, remaining essentially unchanged. It "
+"make a type specimen book. It has survived not only five centuries, but also "
+"the leap into electronic typesetting, remaining essentially unchanged. It "
 "was popularised in the 1960s with the release of Letraset sheets containing "
 "Lorem Ipsum passages, and more recently with desktop publishing software "
 "like Aldus PageMaker including versions of Lorem Ipsum."
 msgstr ""
-"لورم ایپسوم به سادگی متنی ساختگی از صنعت چاپ و حروف‌چینی است. لورم ایپسوم از"
-" قرن ۱۵۰۰ به عنوان متن استاندارد این صنعت مورد استفاده بوده است، زمانی که یک"
-" چاپگر ناشناس مجموعه‌ای از نوع را گرفت و آن را برای ساختن یک کتاب نمونه "
-"تایپی مرتب کرد. این متن نه تنها پنج قرن، بلکه جهش به حروف‌چینی الکترونیکی را"
-" نیز تاب آورده است و در اصل بدون تغییر باقی مانده است. این متن در دهه ۱۹۶۰ "
-"با انتشار ورق‌های لترست حاوی بخش‌های لورم ایپسوم محبوبیت یافت و اخیراً با "
-"نرم‌افزارهای نشر رومیزی مانند آلدوس پیج‌میکر شامل نسخه‌های لورم ایپسوم، به "
-"صورت گسترده مورد استفاده قرار می‌گیرد."
+"لورم ایپسوم به سادگی متنی ساختگی از صنعت چاپ و حروف‌چینی است. لورم ایپسوم از "
+"قرن ۱۵۰۰ به عنوان متن استاندارد این صنعت مورد استفاده بوده است، زمانی که یک "
+"چاپگر ناشناس مجموعه‌ای از نوع را گرفت و آن را برای ساختن یک کتاب نمونه تایپی "
+"مرتب کرد. این متن نه تنها پنج قرن، بلکه جهش به حروف‌چینی الکترونیکی را نیز "
+"تاب آورده است و در اصل بدون تغییر باقی مانده است. این متن در دهه ۱۹۶۰ با "
+"انتشار ورق‌های لترست حاوی بخش‌های لورم ایپسوم محبوبیت یافت و اخیراً با "
+"نرم‌افزارهای نشر رومیزی مانند آلدوس پیج‌میکر شامل نسخه‌های لورم ایپسوم، به صورت "
+"گسترده مورد استفاده قرار می‌گیرد."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__message_main_attachment_id
@@ -2244,7 +2286,7 @@ msgstr "داشتن‌ آن خوب است"
 #: code:addons/hr/static/src/views/hr_graph_controller.xml:0
 #: code:addons/hr/static/src/views/hr_pivot_controller.xml:0
 msgid "No Data"
-msgstr ""
+msgstr "بدون داده"
 
 #. module: hr
 #: model_terms:ir.actions.act_window,help:hr.open_view_categ_form
@@ -2307,7 +2349,7 @@ msgstr "تعداد فرزندان تحت تکفل"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_hr_job_tree
 msgid "Number of Employees"
-msgstr ""
+msgstr "تعداد کارکنان"
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_job__no_of_employee
@@ -2357,11 +2399,15 @@ msgstr "افسر: مدیریت همه کارکنان"
 #. odoo-python
 #: code:addons/hr/models/mail_activity_plan_template.py:0
 msgid ""
-"Oops! It seems there is a problem with your team structure."
-"                        We found a circular reporting loop and no one in "
-"that loop is linked to a user.                        Please double-check "
-"that everyone reports to the correct manager."
+"Oops! It seems there is a problem with your team "
+"structure.                        We found a circular reporting loop and no "
+"one in that loop is linked to a user.                        Please double-"
+"check that everyone reports to the correct manager."
 msgstr ""
+"اوه! به نظر می رسد ساختار تیم شما مشکل دارد.                        ما یک "
+"حلقه گزارش دایره ای پیدا کردیم و هیچ کس در آن حلقه به یک کاربر مرتبط "
+"نیست.                       لطفاً دوباره بررسی کنید که همه به مدیر صحیح گزارش "
+"دهند."
 
 #. module: hr
 #. odoo-javascript
@@ -2400,7 +2446,7 @@ msgstr "محصول ما"
 #. odoo-javascript
 #: code:addons/hr/static/src/components/avatar_card_resource/avatar_card_resource_popover.xml:0
 msgid "Out of Working Hours"
-msgstr ""
+msgstr "خارج از ساعت کاری"
 
 #. module: hr
 #: model:ir.model.fields.selection,name:hr.selection__hr_employee__hr_icon_display__presence_out_of_working_hour
@@ -2410,7 +2456,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:hr.selection__hr_employee_public__hr_icon_display__presence_out_of_working_hour
 #: model:ir.model.fields.selection,name:hr.selection__hr_employee_public__hr_presence_state__out_of_working_hour
 msgid "Out of Working hours"
-msgstr ""
+msgstr "خارج از ساعت کاری"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__pin
@@ -2427,8 +2473,8 @@ msgstr "پین کد"
 #: model:ir.model.fields,help:hr.field_hr_employee__pin
 #: model:ir.model.fields,help:hr.field_res_users__pin
 msgid ""
-"PIN used to Check In/Out in the Kiosk Mode of the Attendance application (if"
-" enabled in Configuration) and to change the cashier in the Point of Sale "
+"PIN used to Check In/Out in the Kiosk Mode of the Attendance application (if "
+"enabled in Configuration) and to change the cashier in the Point of Sale "
 "application."
 msgstr ""
 "پین مورد استفاده برای ورود/خروج در حالت کیوسک برنامه حضور و غیاب (در صورت "
@@ -2537,6 +2583,8 @@ msgid ""
 "Plan %(plan_names)s cannot use a department as it is used only for some HR "
 "plans."
 msgstr ""
+"برنامه %(plan_names)s نمی تواند از یک بخش استفاده کند زیرا فقط برای برخی از "
+"برنامه های منابع انسانی استفاده می شود.."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_mail_activity_schedule__plan_department_filterable
@@ -2550,9 +2598,8 @@ msgid ""
 "Plan activities %(template_names)s cannot use coach, manager or employee "
 "responsible as it is used only for employee plans."
 msgstr ""
-"برنامه‌های فعالیتی %(template_names)s نمی‌توانند از مربی، مدیر یا کارمند "
-"مسئول استفاده کنند زیرا تنها برای برنامه‌های کارمندی مورد استفاده قرار "
-"می‌گیرند."
+"برنامه‌های فعالیتی %(template_names)s نمی‌توانند از مربی، مدیر یا کارمند مسئول "
+"استفاده کنند زیرا تنها برای برنامه‌های کارمندی مورد استفاده قرار می‌گیرند."
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_department_form
@@ -2584,7 +2631,8 @@ msgid ""
 "Policy to post a message on the document using the mailgateway.\n"
 "- everyone: everyone can post\n"
 "- partners: only authenticated partners\n"
-"- followers: only followers of the related document or members of following channels\n"
+"- followers: only followers of the related document or members of following "
+"channels\n"
 msgstr ""
 "خط مشی ارسال پیام در سند با استفاده از mailgateway.\n"
 "- همه: همه می توانند پست کنند\n"
@@ -2594,12 +2642,12 @@ msgstr ""
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_config_settings_view_form
 msgid "Presence Condition"
-msgstr ""
+msgstr "شرایط حضور"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_config_settings_view_form
 msgid "Presence Display"
-msgstr ""
+msgstr "نمایش حضور"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_config_settings_view_form
@@ -2729,14 +2777,16 @@ msgstr "نیازهای مشتری را ارزیابی کنید"
 #: model_terms:ir.actions.act_window,help:hr.hr_employee_public_action
 #: model_terms:ir.actions.act_window,help:hr.open_view_employee_list_my
 msgid ""
-"Quickly find all the information you need for your employees such as contact"
-" data, job position, availability, etc."
+"Quickly find all the information you need for your employees such as contact "
+"data, job position, availability, etc."
 msgstr ""
+"به سرعت تمام اطلاعات مورد نیاز کارمندان خود را پیدا کنید، مانند اطلاعات "
+"تماس، موقعیت شغلی، در دسترس بودن و غیره."
 
 #. module: hr
 #: model:hr.department,name:hr.dep_rd_be
 msgid "R&D USA"
-msgstr "آر اند دی ایالات متحده آمریکا"
+msgstr "آر اند دی  آمریکا"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department__rating_ids
@@ -2789,7 +2839,7 @@ msgstr "ثبت خروج"
 #: code:addons/hr/models/hr_employee.py:0
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form_smartbutton_inherited
 msgid "Related Contacts"
-msgstr ""
+msgstr "مخاطبین مرتبط"
 
 #. module: hr
 #. odoo-python
@@ -2800,7 +2850,7 @@ msgstr "کارمندان مرتبط"
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__related_partners_count
 msgid "Related Partners Count"
-msgstr ""
+msgstr "تعداد شرکای مرتبط"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
@@ -2860,6 +2910,11 @@ msgstr "منبع"
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__resource_calendar_id
 msgid "Resource Calendar"
 msgstr "تقویم منبع"
+
+#. module: hr
+#: model:ir.model,name:hr.model_resource_calendar
+msgid "Resource Working Time"
+msgstr "زمان کار منابع"
 
 #. module: hr
 #: model:ir.model,name:hr.model_resource_resource
@@ -3010,7 +3065,7 @@ msgstr "شماره ملی"
 #. odoo-python
 #: code:addons/hr/models/hr_employee_base.py:0
 msgid "Some employee already have a work contact"
-msgstr ""
+msgstr "برخی از کارمندان قبلاً یک تماس کاری دارند"
 
 #. module: hr
 #: model_terms:hr.job,website_description:hr.job_ceo
@@ -3069,7 +3124,7 @@ msgstr ""
 #. module: hr
 #: model:hr.contract.type,name:hr.contract_type_statutaire
 msgid "Statutory"
-msgstr ""
+msgstr "قانونی"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_users_view_form_profile
@@ -3101,6 +3156,8 @@ msgid ""
 "Structure Employees per department and have an overview of e.g.\n"
 "                    expenses, timesheets, time off, recruitment, etc."
 msgstr ""
+"کارمندان را در هر بخش ساختار دهید و یک دید کلی از مثلاً داشته باشید.\n"
+"                    هزینه ها، جدول زمانی، مرخصی، استخدام و غیره"
 
 #. module: hr
 #: model:hr.contract.type,name:hr.contract_type_student
@@ -3186,12 +3243,17 @@ msgstr ""
 #. module: hr
 #: model_terms:hr.job,description:hr.job_marketing
 msgid ""
-"The Marketing Manager defines the mid- to long-term marketing strategy for his covered market segments in the World.\n"
-"              He develops and monitors the annual budget in collaboration with Sales.\n"
-"              He defines the products and customers portfolio according to the marketing plan.\n"
-"              This mission requires strong collaboration with Technical Service and Sales."
+"The Marketing Manager defines the mid- to long-term marketing strategy for "
+"his covered market segments in the World.\n"
+"              He develops and monitors the annual budget in collaboration "
+"with Sales.\n"
+"              He defines the products and customers portfolio according to "
+"the marketing plan.\n"
+"              This mission requires strong collaboration with Technical "
+"Service and Sales."
 msgstr ""
-"بازاریابی مدیر استراتژی بازاریابی میان‌مدت و بلندمدت را برای بخش‌های بازار تحت پوشش خود در جهان تعریف می‌کند.\n"
+"بازاریابی مدیر استراتژی بازاریابی میان‌مدت و بلندمدت را برای بخش‌های بازار تحت "
+"پوشش خود در جهان تعریف می‌کند.\n"
 "او بودجه سالانه را با همکاری فروش توسعه و نظارت می‌کند.\n"
 "او سبد محصولات و مشتریان را بر اساس طرح بازاریابی تعریف می‌کند.\n"
 "این ماموریت نیازمند همکاری قوی با خدمات فنی و فروش است."
@@ -3293,8 +3355,8 @@ msgstr ""
 #: code:addons/hr/static/src/views/hr_graph_controller.xml:0
 #: code:addons/hr/static/src/views/hr_pivot_controller.xml:0
 msgid ""
-"This report gives you an overview of your employees based on the measures of"
-" your choice."
+"This report gives you an overview of your employees based on the measures of "
+"your choice."
 msgstr ""
 
 #. module: hr
@@ -3325,9 +3387,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr/models/hr_employee.py:0
 msgid ""
-"To avoid multi company issues (losing the access to your previous contracts,"
-" leaves, ...), you should create another employee in the new company "
-"instead."
+"To avoid multi company issues (losing the access to your previous contracts, "
+"leaves, ...), you should create another employee in the new company instead."
 msgstr ""
 "برای جلوگیری از مشکلات چند شرکت (از دست دادن دسترسی به قراردادهای قبلی، "
 "مرخصی‌ها و ...)، بهتر است در شرکت جدید یک کارمند دیگر ایجاد کنید."
@@ -3455,10 +3516,13 @@ msgstr ""
 #: model_terms:hr.job,description:hr.job_developer
 msgid ""
 "We are currently looking for someone like that to join our Web team.\n"
-"                Someone who can snap out of coding and perform analysis or meet clients to explain the technical possibilities that can meet their needs."
+"                Someone who can snap out of coding and perform analysis or "
+"meet clients to explain the technical possibilities that can meet their "
+"needs."
 msgstr ""
 "ما در حال حاضر به دنبال فردی هستیم که به تیم وب ما بپیوندد.\n"
-"کسی که بتواند از برنامه‌نویسی خارج شده و تحلیل‌هایی انجام دهد یا با مشتریان ملاقات کند تا امکانات فنی که می‌تواند نیازهای آنها را برآورده کند توضیح دهد."
+"کسی که بتواند از برنامه‌نویسی خارج شده و تحلیل‌هایی انجام دهد یا با مشتریان "
+"ملاقات کند تا امکانات فنی که می‌تواند نیازهای آنها را برآورده کند توضیح دهد."
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department__website_message_ids
@@ -3564,7 +3628,7 @@ msgstr "مکان کاری"
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__work_location_name
 #: model:ir.model.fields,field_description:hr.field_res_users__work_location_name
 msgid "Work Location Name"
-msgstr ""
+msgstr "نام محل کار"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__work_location_type
@@ -3572,7 +3636,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__work_location_type
 #: model:ir.model.fields,field_description:hr.field_res_users__work_location_type
 msgid "Work Location Type"
-msgstr ""
+msgstr "نوع محل کار"
 
 #. module: hr
 #: model:ir.actions.act_window,name:hr.hr_work_location_action
@@ -3628,7 +3692,7 @@ msgstr "تلفن محل کار"
 #. module: hr
 #: model:ir.model.fields.selection,name:hr.selection__hr_employee__employee_type__worker
 msgid "Worker"
-msgstr ""
+msgstr "کارگر"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__resource_calendar_id
@@ -3642,18 +3706,28 @@ msgstr "برنامه‌های کاری"
 
 #. module: hr
 #. odoo-python
-#: code:addons/hr/models/res_users.py:0
+#: code:addons/hr/models/hr_employee.py:0
 msgid ""
-"You are not allowed to create an employee because the user does not have "
-"access rights for %s"
+"You are not allowed to access \"Employee\" (hr.employee) records.\n"
+"We can redirect you to the public employee list."
 msgstr ""
 
 #. module: hr
 #. odoo-python
 #: code:addons/hr/models/res_users.py:0
 msgid ""
-"You are only allowed to update your preferences. Please contact a HR officer"
-" to update other information."
+"You are not allowed to create an employee because the user does not have "
+"access rights for %s"
+msgstr ""
+"شما مجاز به ایجاد کارمند نیستید زیرا کاربر حق دسترسی به آن را نداردشما مجاز "
+"به ایجاد کارمند نیستید زیرا کاربر  %s حق دسترسی به آن را ندارد"
+
+#. module: hr
+#. odoo-python
+#: code:addons/hr/models/res_users.py:0
+msgid ""
+"You are only allowed to update your preferences. Please contact a HR officer "
+"to update other information."
 msgstr ""
 "شما فقط مجاز به بروزرسانی ترجیحات خود هستید. لطفا برای بروز رسانی اطلاعات "
 "دیگران با یک مدیر منابع انسانی تماس بگیرید."
@@ -3679,42 +3753,70 @@ msgstr "شما به این سند دسترسی ندارید."
 #. module: hr
 #: model_terms:hr.job,description:hr.job_trainee
 msgid ""
-"You participate to the update of our tutorial tools and pre-sales tools after the launch of a new version of Odoo. Indeed, any new version of the software brings significant improvements in terms of functionalities, ergonomics and configuration.\n"
-"You will have to become familiar with the existing tools (books, class supports, Odoo presentation’s slides, commercial tools),\n"
-"to participate to the update of those tools in order to make them appropriate for the new version of the software and, for sure,\n"
+"You participate to the update of our tutorial tools and pre-sales tools "
+"after the launch of a new version of Odoo. Indeed, any new version of the "
+"software brings significant improvements in terms of functionalities, "
+"ergonomics and configuration.\n"
+"You will have to become familiar with the existing tools (books, class "
+"supports, Odoo presentation’s slides, commercial tools),\n"
+"to participate to the update of those tools in order to make them "
+"appropriate for the new version of the software and, for sure,\n"
 "to suggest improvements in order to cover the new domains of the software.\n"
-"You join the Implementation Assistance department. This team of 3 people go with Odoo’s clients in the set up of the software. Your role will be\n"
-"to animate webinars in order to show the different functionalities of the software.\n"
+"You join the Implementation Assistance department. This team of 3 people go "
+"with Odoo’s clients in the set up of the software. Your role will be\n"
+"to animate webinars in order to show the different functionalities of the "
+"software.\n"
 "to be involved in the support of the customers and\n"
 "to answer to their questions.\n"
 "You help the support manager to set up new support services by\n"
 "being involved in the treatment of new cases,\n"
 "contributing to the set up of a new politic,\n"
-"being involved into satisfaction surveys in order to have a better knowledge of how the support given is seen by the customers."
+"being involved into satisfaction surveys in order to have a better knowledge "
+"of how the support given is seen by the customers."
 msgstr ""
-"شما در به‌روزرسانی ابزارهای آموزشی و پیش‌فروش ما پس از راه‌اندازی نسخه جدیدی از Odoo مشارکت می‌کنید. واقعاً، هر نسخه جدیدی از نرم‌افزار بهبودهای قابل توجهی در زمینه عملکردها، ارگونومی و پیکربندی به همراه دارد.\n"
-"شما باید با ابزارهای موجود (کتاب‌ها، پشتیبانی‌های کلاس، اسلایدهای ارائه Odoo، ابزارهای تجاری) آشنا شوید،\n"
-"در به‌روزرسانی این ابزارها برای مناسب‌سازی آن‌ها برای نسخه جدید نرم‌افزار مشارکت کنید و، مطمئناً،\n"
+"شما در به‌روزرسانی ابزارهای آموزشی و پیش‌فروش ما پس از راه‌اندازی نسخه جدیدی از "
+"Odoo مشارکت می‌کنید. واقعاً، هر نسخه جدیدی از نرم‌افزار بهبودهای قابل توجهی در "
+"زمینه عملکردها، ارگونومی و پیکربندی به همراه دارد.\n"
+"شما باید با ابزارهای موجود (کتاب‌ها، پشتیبانی‌های کلاس، اسلایدهای ارائه Odoo، "
+"ابزارهای تجاری) آشنا شوید،\n"
+"در به‌روزرسانی این ابزارها برای مناسب‌سازی آن‌ها برای نسخه جدید نرم‌افزار مشارکت "
+"کنید و، مطمئناً،\n"
 "پیشنهادهایی برای بهبود جهت پوشش دامنه‌های جدید نرم‌افزار ارائه دهید.\n"
-"شما به بخش کمک به پیاده‌سازی ملحق می‌شوید. این تیم ۳ نفره به مشتریان Odoo در راه‌اندازی نرم‌افزار کمک می‌کند. نقش شما این خواهد بود\n"
+"شما به بخش کمک به پیاده‌سازی ملحق می‌شوید. این تیم ۳ نفره به مشتریان Odoo در "
+"راه‌اندازی نرم‌افزار کمک می‌کند. نقش شما این خواهد بود\n"
 ".وبینارها را برای نشان دادن عملکردهای مختلف نرم‌افزار برگزاری کنید\n"
 ".در پشتیبانی مشتریان درگیر شوید و\n"
 ".به سوالات آنها پاسخ دهید\n"
 "شما به مدیر پشتیبانی در راه‌اندازی خدمات پشتیبانی جدید با\n"
 ".درگیر شدن در رسیدگی به موارد جدید،\n"
 ".سهم‌گذاری در راه‌اندازی یک سیاست جدید،\n"
-".و درگیر شدن در نظرسنجی‌های رضایت به منظور آگاهی بهتر از چگونگی دیده شدن پشتیبانی ارائه‌شده توسط مشتریان کمک می‌کنید"
+".و درگیر شدن در نظرسنجی‌های رضایت به منظور آگاهی بهتر از چگونگی دیده شدن "
+"پشتیبانی ارائه‌شده توسط مشتریان کمک می‌کنید"
 
 #. module: hr
 #: model_terms:hr.job,description:hr.job_cto
 msgid ""
-"You will take part in the consulting services we provide to our partners and customers: design, analysis, development, testing, project management, support/coaching. You will work autonomously as well as coordinate and supervise small distributed development teams for some projects. Optionally, you will deliver Odoo training sessions to partners and customers (8-10 people/session). You will report to the Head of Professional Services and work closely with all developers and consultants.\n"
+"You will take part in the consulting services we provide to our partners and "
+"customers: design, analysis, development, testing, project management, "
+"support/coaching. You will work autonomously as well as coordinate and "
+"supervise small distributed development teams for some projects. Optionally, "
+"you will deliver Odoo training sessions to partners and customers (8-10 "
+"people/session). You will report to the Head of Professional Services and "
+"work closely with all developers and consultants.\n"
 "\n"
-"The job is located in Grand-Rosière (1367), Belgium (between Louvain-La-Neuve and Namur)."
+"The job is located in Grand-Rosière (1367), Belgium (between Louvain-La-"
+"Neuve and Namur)."
 msgstr ""
-"شما در خدمات مشاوره‌ای که به شرکا و مشتریان خود ارائه می‌دهیم، مشارکت خواهید کرد: طراحی، تحلیل، توسعه، آزمایش، مدیریت پروژه، پشتیبانی/مربی‌گری. شما به صورت مستقل کار خواهید کرد و همچنین تیم‌های توسعه کوچکی که در پراکندگی قرار دارند را هماهنگ و نظارت خواهید کرد. به صورت اختیاری، شما جلسات آموزشی اودو را به شرکا و مشتریان (8-10 نفر در هر جلسه) ارائه خواهید کرد. شما به رئیس خدمات حرفه‌ای گزارش خواهید داد و به طور نزدیک با تمامی توسعه‌دهندگان و مشاوران همکاری خواهید کرد.\n"
+"شما در خدمات مشاوره‌ای که به شرکا و مشتریان خود ارائه می‌دهیم، مشارکت خواهید "
+"کرد: طراحی، تحلیل، توسعه، آزمایش، مدیریت پروژه، پشتیبانی/مربی‌گری. شما به "
+"صورت مستقل کار خواهید کرد و همچنین تیم‌های توسعه کوچکی که در پراکندگی قرار "
+"دارند را هماهنگ و نظارت خواهید کرد. به صورت اختیاری، شما جلسات آموزشی اودو "
+"را به شرکا و مشتریان (8-10 نفر در هر جلسه) ارائه خواهید کرد. شما به رئیس "
+"خدمات حرفه‌ای گزارش خواهید داد و به طور نزدیک با تمامی توسعه‌دهندگان و مشاوران "
+"همکاری خواهید کرد.\n"
 "\n"
-"این کار در Grand-Rosière (1367)، بلژیک (بین Louvain-La-Neuve و Namur) قرار دارد."
+"این کار در Grand-Rosière (1367)، بلژیک (بین Louvain-La-Neuve و Namur) قرار "
+"دارد."
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.res_users_view_form_profile
@@ -3736,7 +3838,7 @@ msgstr "اداره"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
 msgid "e.g. Building 2, Remote, etc."
-msgstr ""
+msgstr "مثلا ساختمان2، دورکار، غیره"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_employee_public_view_form
@@ -3752,7 +3854,7 @@ msgstr "برای مثال مدیر فروش"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_hr_job_form
 msgid "e.g. Summarize the position in one or two lines..."
-msgstr ""
+msgstr "به عنوان مثال موقعیت را در یک یا دو خط خلاصه کنید..."
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form

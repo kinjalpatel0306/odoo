@@ -445,7 +445,8 @@ class ProductTemplate(models.Model):
             and website.show_line_subtotals_tax_selection == 'tax_included'
             and not all(
                 tax.price_include
-                for tax in product_or_template.combo_ids.combo_item_ids.product_id.taxes_id
+                for tax
+                in product_or_template.combo_ids.sudo().combo_item_ids.product_id.taxes_id
             )
         ):
             combination_info['tax_disclaimer'] = _(
@@ -551,6 +552,9 @@ class ProductTemplate(models.Model):
             'product_taxes': product_taxes,  # taxes before fpos mapping
             'taxes': taxes,  # taxes after fpos mapping
         })
+
+        if combination_info['prevent_zero_price_sale']:
+            combination_info['compare_list_price'] = 0
 
         return combination_info
 
@@ -753,7 +757,11 @@ class ProductTemplate(models.Model):
         if tags:
             if isinstance(tags, str):
                 tags = tags.split(',')
-            domains.append([('product_variant_ids.all_product_tag_ids', 'in', tags)])
+            domains.append([
+                '|',
+                ('product_tag_ids', 'in', tags),
+                ('product_variant_ids.additional_product_tag_ids', 'in', tags),
+            ])
         if min_price:
             domains.append([('list_price', '>=', min_price)])
         if max_price:
@@ -920,3 +928,19 @@ class ProductTemplate(models.Model):
                 'currency_name': currency.name,
             })
         return data
+
+    @api.model
+    def _allow_publish_rating_stats(self):
+        return True
+
+    def _get_access_action(self, access_uid=None, force_website=False):
+        """ Instead of the classic form view, redirect to website if it is published. """
+        self.ensure_one()
+        if force_website or self.website_published:
+            return {
+                "type": "ir.actions.act_url",
+                "url": self.website_url,
+                "target": "self",
+                "target_type": "public",
+            }
+        return super()._get_access_action(access_uid=access_uid, force_website=force_website)

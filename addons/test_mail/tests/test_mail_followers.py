@@ -62,6 +62,8 @@ class BaseFollowersTest(MailCommon):
         followed_after = self.env['mail.test.simple'].search([('message_partner_ids', 'in', partner.ids)])
         self.assertTrue(partner in test_record.message_partner_ids)
         self.assertEqual(followed_before + test_record, followed_after)
+        with self.assertRaisesRegex(AccessError, 'Portal users can only filter threads'):
+            self.env['mail.test.simple'].with_user(self.user_portal).search([('message_partner_ids', 'in', partner.ids)])
 
     def test_field_followers(self):
         test_record = self.test_record.with_user(self.user_employee)
@@ -204,6 +206,18 @@ class BaseFollowersTest(MailCommon):
         partner0.write({'active': False})
         test_record.write({'message_partner_ids': [(4, partner0.id), (4, partner1.id)]})
         self.assertEqual(test_record.message_follower_ids.partner_id, partner1)
+
+        # Test when the method inverse is called in batch
+        other_record = test_record.create({
+            'name': 'Other',
+        })
+        records = test_record + other_record
+
+        records.message_partner_ids = (partner2 + partner3)
+        self.assertEqual(records.message_partner_ids, partner2 + partner3)
+
+        records.message_partner_ids -= partner2
+        self.assertEqual(records.message_partner_ids, partner3)
 
     @mute_logger('odoo.addons.base.models.ir_model', 'odoo.models')
     def test_followers_inverse_message_partner_access_rights(self):

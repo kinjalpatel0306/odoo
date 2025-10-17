@@ -15,6 +15,7 @@
 # Yihya Hugirat <hugirat@gmail.com>, 2024
 # ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
 # Ha Ketem <haketem@gmail.com>, 2024
+# Hed Shefer <hed@laylinetech.com>, 2025
 # or balmas, 2025
 # 
 msgid ""
@@ -635,7 +636,7 @@ msgstr "פעולה לא תקינה ליצירת קישור (%s)"
 #. odoo-python
 #: code:addons/mail_group/models/mail_group_moderation.py:0
 msgid "Invalid email address “%s”"
-msgstr ""
+msgstr "כתובת מייל לא חוקית “%s”"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.invalid_token_subscription
@@ -700,7 +701,7 @@ msgstr "לאפשר לאנשים להצטרף לרשימה, או הוספה יד�
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_incoming_local
 msgid "Local-part based incoming detection"
-msgstr "זיהוי נכנסות מבוסס חלק מקומי"
+msgstr "זיהוי הודעות נכנסות מבוסס על החלק המקומי בכתובת"
 
 #. module: mail_group
 #: model:ir.model,name:mail_group.model_mail_group

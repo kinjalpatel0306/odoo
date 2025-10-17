@@ -145,7 +145,7 @@ class Message(models.Model):
             raise UserError(self.env._('Operation not supported'))
         return [('model', '=', model)] + res_id_domain
 
-    @api.ondelete(at_uninstall=True)
+    @api.ondelete(at_uninstall=False)
     def _except_audit_log(self):
         if self.env.context.get('bypass_audit') is bypass_token:
             return
@@ -166,7 +166,7 @@ class Message(models.Model):
                 message.account_audit_log_move_id
                 and not message.account_audit_log_move_id.posted_before
             ):
-                raise UserError(self.env._("You cannot remove parts of the audit trail. Archive the record instead."))
+                raise UserError(self.env._("You cannot remove parts of the audit trail."))
 
     def write(self, vals):
         # We allow any whitespace modifications in the subject

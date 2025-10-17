@@ -10,7 +10,7 @@ import { MockEventTarget } from "../hoot_utils";
 const {
     Array: { isArray: $isArray },
     Element,
-    Object: { entries: $entries },
+    Object: { assign: $assign, entries: $entries },
     scroll: windowScroll,
     scrollBy: windowScrollBy,
     scrollTo: windowScrollTo,
@@ -22,10 +22,11 @@ const { animate, scroll, scrollBy, scrollIntoView, scrollTo } = Element.prototyp
 // Internal
 //-----------------------------------------------------------------------------
 
-const forceInstantScroll = (args) =>
-    !allowAnimations && args[0] && typeof args[0] === "object"
+function forceInstantScroll(args) {
+    return !allowAnimations && args[0] && typeof args[0] === "object"
         ? [{ ...args[0], behavior: "instant" }, ...args.slice(1)]
         : args;
+}
 
 const animationChangeBus = new MockEventTarget();
 const animationChangeCleanups = [];
@@ -122,7 +123,7 @@ export function mockedAnimate(...args) {
             style[key] = $isArray(value) ? value.at(-1) : value;
         }
     }
-    Object.assign(this.style, style);
+    $assign(this.style, style);
 
     // Return mock animation
     return new MockAnimation();

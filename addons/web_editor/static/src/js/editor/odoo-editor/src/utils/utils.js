@@ -69,7 +69,7 @@ export const PROTECTED_BLOCK_TAG = ['TR','TD','TABLE','TBODY','UL','OL','LI'];
  * override of the font-size.
  */
 export const FONT_SIZE_CLASSES = ["display-1-fs", "display-2-fs", "display-3-fs", "display-4-fs", "h1-fs",
-    "h2-fs", "h3-fs", "h4-fs", "h5-fs", "h6-fs", "base-fs", "o_small-fs", "small"];
+    "h2-fs", "h3-fs", "h4-fs", "h5-fs", "h6-fs", "base-fs", "o_small-fs", "small", "o_small_twelve-fs", "o_small_ten-fs", "o_small_eight-fs"];
 
 /**
  * Array of all the classes used by the editor to change the text style.
@@ -991,6 +991,7 @@ export function getDeepRange(editable, { range, sel, splitText, select, correctT
 
 export function getAdjacentCharacter(editable, side) {
     let { focusNode, focusOffset } = editable.ownerDocument.getSelection();
+    [focusNode, focusOffset] = getDeepestPosition(focusNode, focusOffset);
     const originalBlock = closestBlock(focusNode);
     let adjacentCharacter;
     while (!adjacentCharacter && focusNode) {
@@ -1284,7 +1285,8 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
 
     const selectedNodes = getSelectedNodes(editor.editable).filter(
         (n) =>
-            ((n.nodeType === Node.TEXT_NODE && (isVisibleTextNode(n) || isZWS(n))) ||
+            ((n.nodeType === Node.TEXT_NODE &&
+                (isVisibleTextNode(n) || isZWS(n) || (/^\n+$/.test(n.nodeValue) && !applyStyle))) ||
                 n.nodeName === "BR") &&
             closestElement(n).isContentEditable
     );
@@ -1300,12 +1302,13 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
         let parentNode = node.parentElement;
 
         // Remove the format on all inline ancestors until a block or an element
-        // with a class that is not related to font size (in case the formatting
-        // comes from the class).
+        // with a class that is not related to font size or color (in case the
+        // formatting comes from the class).
         while (
             parentNode && !isBlock(parentNode) &&
             !isUnbreakable(parentNode) && !isUnbreakable(currentNode) &&
-            (parentNode.classList.length === 0 ||
+            (parentNode.nodeName === "FONT" ||
+                parentNode.classList.length === 0 ||
                 [...parentNode.classList].every(cls => FONT_SIZE_CLASSES.includes(cls)))
         ) {
             const isUselessZws = parentNode.tagName === 'SPAN' &&
@@ -1325,8 +1328,11 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
 
             parentNode = currentNode.parentElement;
         }
-
-        const firstBlockOrClassHasFormat = formatSpec.isFormatted(parentNode, formatProps);
+        const isFormatted =
+            formatName === "setFontSizeClassName" && !formatProps
+                ? hasAnyFontSizeClass
+                : formatSpec.isFormatted;
+        const firstBlockOrClassHasFormat = isFormatted(parentNode, formatProps);
         if (firstBlockOrClassHasFormat && !applyStyle) {
             formatSpec.addNeutralStyle && formatSpec.addNeutralStyle(getOrCreateSpan(node, inlineAncestors));
         } else if (!firstBlockOrClassHasFormat && applyStyle) {
@@ -1335,7 +1341,7 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
                 node.after(tag);
                 tag.append(node);
 
-                if (!formatSpec.isFormatted(tag, formatProps)) {
+                if (!isFormatted(tag, formatProps)) {
                     tag.after(node);
                     tag.remove();
                     formatSpec.addStyle(getOrCreateSpan(node, inlineAncestors), formatProps);
@@ -1627,6 +1633,17 @@ export function hasClass(node, props) {
     const element = closestElement(node);
     return element.classList.contains(props.className);
 }
+
+/**
+ * Return true if the given node has any font-size class.
+ *
+ * @param {Node} node A node to check for font-size classes.
+ * @returns {boolean}
+ */
+export function hasAnyFontSizeClass(node) {
+    return FONT_SIZE_CLASSES.find((cls) => node?.classList?.contains(cls));
+}
+
 /**
  * Return true if the given node appears in a different direction than that of
  * the editable ('ltr' or 'rtl').
@@ -1652,9 +1669,14 @@ export function hasClass(node, props) {
  * @returns {boolean}
  */
 export function isSelectionFormat(editable, format) {
-    const selectedNodes = getTraversedNodes(editable)
-        .filter((n) => n.nodeType === Node.TEXT_NODE && n.nodeValue.replaceAll(ZWNBSP_CHAR, '').length);
-    const isFormatted = formatsSpecs[format].isFormatted;
+    const selectedNodes = getTraversedNodes(editable).filter(
+        (n) =>
+            n.nodeType === Node.TEXT_NODE &&
+            n.nodeValue.replaceAll(ZWNBSP_CHAR, "").length &&
+            (!/^\n+$/.test(n.nodeValue) || !isBlock(closestElement(n)))
+    );
+    const isFormatted =
+        format === "setFontSizeClassName" ? hasAnyFontSizeClass : formatsSpecs[format].isFormatted;
     return selectedNodes.length && selectedNodes.every(n => isFormatted(n, editable));
 }
 
@@ -1692,7 +1714,8 @@ export function isUnremovable(node) {
             (node.classList.contains('o_editable') || node.getAttribute('t-set') || node.getAttribute('t-call'))) ||
         (node.classList && node.classList.contains('oe_unremovable')) ||
         (node.nodeName === 'SPAN' && node.parentElement && node.parentElement.getAttribute('data-oe-type') === 'monetary') ||
-        (node.ownerDocument && node.ownerDocument.defaultWindow && !ancestors(node).find(ancestor => ancestor.oid === 'root')) // Node is in DOM but not in editable.
+        (node.ownerDocument && node.ownerDocument.defaultWindow && !ancestors(node).find(ancestor => ancestor.oid === 'root')) || // Node is in DOM but not in editable.
+        (node.dataset && node.dataset.bsToggle === 'tab')
     );
 }
 
@@ -2191,7 +2214,7 @@ export function isEmptyBlock(blockEl) {
     for (const node of nodes) {
         // There is no text and no double BR, the only thing that could make
         // this visible is a "visible empty" node like an image.
-        if (node.nodeName != 'BR' && (isSelfClosingElement(node) || isIconElement(node))) {
+        if (node.nodeName != 'BR' && (isSelfClosingElement(node) || isIconElement(node) || isZWS(node))) {
             return false;
         }
     }
@@ -2469,6 +2492,15 @@ export function fillEmpty(el) {
         el.appendChild(zws);
         el.setAttribute("data-oe-zws-empty-inline", "");
         fillers.zws = zws;
+        // If the parent was filled with BR and we are filling the `el` here
+        // we should remove the parent `br` otherwise we fill the el twice.
+        // we do that only for visible el as in `cleanForSave` we remove the 
+        // non visible elements (with no classes if they are empty) so we should
+        // keep the br
+        if (el.classList.length && fillers.br) {
+            fillers.br.remove();
+            delete fillers.br;
+        }
         const previousSibling = el.previousSibling;
         if (previousSibling && previousSibling.nodeName === "BR") {
             previousSibling.remove();
@@ -2840,8 +2872,15 @@ const priorityRestoreStateRules = [
     [
         // Replace a space by &nbsp; when it was visible thanks to a BR which
         // is now gone.
-        { direction: DIRECTIONS.RIGHT, cType1: CTGROUPS.BR, cType2: CTYPES.SPACE | CTGROUPS.BLOCK },
+        { direction: DIRECTIONS.RIGHT, cType1: CTGROUPS.BR, cType2: CTYPES.SPACE },
         { spaceVisibility: true },
+    ],
+    [
+        // Replace a space by &nbsp; when it was visible thanks to a BR which
+        // is now gone and duplicate a BR which was visible thanks to a second
+        // BR which is now gone.
+        { direction: DIRECTIONS.RIGHT, cType1: CTGROUPS.BR, cType2: CTGROUPS.BLOCK },
+        { spaceVisibility: true, brVisibility: true },
     ],
     [
         // Remove all collapsed spaces when a space is removed.

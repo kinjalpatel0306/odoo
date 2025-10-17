@@ -30,7 +30,7 @@ def make_efactura_request(session, company, endpoint, method, params, data=None)
 
     try:
         response = session.request(method=method, url=url, params=params, data=data, headers=headers, timeout=60)
-    except requests.HTTPError as e:
+    except (requests.ConnectionError, requests.TooManyRedirects) as e:
         return {'error': str(e)}
     if response.status_code == 204:
         return {'error': _('You reached the limit of requests. Please try again later.')}
@@ -86,7 +86,7 @@ class L10nRoEdiDocument(models.Model):
         result = make_efactura_request(
             session=requests,
             company=company,
-            endpoint='upload',
+            endpoint='upload' if self.env.context.get('is_b2b') else 'uploadb2c',  # TODO: change the context value into a method parameter in master
             method='POST',
             params={'standard': 'UBL' if move_type == 'out_invoice' else 'CN',
                     'cif': company.vat.replace('RO', '')},

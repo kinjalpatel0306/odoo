@@ -5,8 +5,11 @@ patch(PosStore.prototype, {
     getReceiptHeaderData(order) {
         const result = super.getReceiptHeaderData(...arguments);
         const company = this.company;
+        result.is_simplified =
+            (order?.partner_id?.company_type === "person" || !order?.partner_id) &&
+            company.country_id?.code === "SA";
         if (order && company?.country_id?.code === "SA") {
-            result.is_settlement = this.get_order().is_settlement();
+            result.is_settlement = order.is_settlement();
             if (!result.is_settlement) {
                 const codeWriter = new window.ZXing.BrowserQRCodeSvgWriter();
                 const qr_values = order.compute_sa_qr_code(

@@ -1387,7 +1387,7 @@ msgstr "Seriennummer"
 msgid ""
 "Set archive to true to hide the maintenance request without deleting it."
 msgstr ""
-"Setzen Sie Archivierung auf True um die Wartungsanfrage auszublenden, ohne "
+"Setzen Sie Archivierung auf Wahr um die Wartungsanfrage auszublenden, ohne "
 "sie zu löschen."
 
 #. module: maintenance
@@ -1672,7 +1672,7 @@ msgstr "z. B. Bildschirm funktioniert nicht"
 #. module: maintenance
 #: model_terms:ir.ui.view,arch_db:maintenance.hr_equipment_category_view_form
 msgid "e.g. mycompany.com"
-msgstr "z. B. mycompany.com"
+msgstr "z. B. meinunternehmen.com"
 
 #. module: maintenance
 #: model_terms:ir.ui.view,arch_db:maintenance.hr_equipment_request_view_graph

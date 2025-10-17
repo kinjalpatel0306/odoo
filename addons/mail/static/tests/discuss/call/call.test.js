@@ -17,15 +17,13 @@ import { mailDataHelpers } from "@mail/../tests/mock_server/mail_mock_server";
 
 import { describe, expect, test } from "@odoo/hoot";
 import { advanceTime, hover, manuallyDispatchProgrammaticEvent, queryFirst } from "@odoo/hoot-dom";
-import { mockSendBeacon, mockUserAgent } from "@odoo/hoot-mock";
+import { mockSendBeacon } from "@odoo/hoot-mock";
 import {
     Command,
     mockService,
     patchWithCleanup,
     serverState,
 } from "@web/../tests/web_test_helpers";
-
-import { isMobileOS } from "@web/core/browser/feature_detection";
 
 describe.current.tags("desktop");
 defineMailModels();
@@ -51,10 +49,6 @@ test("basic rendering", async () => {
     await click("[title='More']");
     await contains("[title='Raise Hand']");
     await contains("[title='Enter Full Screen']");
-    // screen sharing not available in mobile OS
-    mockUserAgent("Chrome/0.0.0 Android (OdooMobile; Linux; Android 13; Odoo TestSuite)");
-    expect(isMobileOS()).toBe(true);
-    await contains("[title='Share Screen']", { count: 0 });
 });
 
 test("keep the `more` popover active when hovering it", async () => {
@@ -331,13 +325,13 @@ test("join/leave sounds are only played on main tab", async () => {
     });
     await openDiscuss(channelId, { target: env1 });
     await openDiscuss(channelId, { target: env2 });
-    await click("[title='Start a Call']", { target: env1 });
-    await contains(".o-discuss-Call", { target: env1 });
-    await contains(".o-discuss-Call", { target: env2 });
+    await click(`${env1.selector} [title='Start a Call']`);
+    await contains(`${env1.selector} .o-discuss-Call`);
+    await contains(`${env2.selector} .o-discuss-Call`);
     await assertSteps(["tab1 - play - channel-join"]);
-    await click("[title='Disconnect']:not([disabled])", { target: env1 });
-    await contains(".o-discuss-Call", { target: env1, count: 0 });
-    await contains(".o-discuss-Call", { target: env2, count: 0 });
+    await click(`${env1.selector} [title='Disconnect']:not([disabled])`);
+    await contains(`${env1.selector} .o-discuss-Call`, { count: 0 });
+    await contains(`${env2.selector} .o-discuss-Call`, { count: 0 });
     await assertSteps(["tab1 - play - channel-leave"]);
 });
 
@@ -496,6 +490,9 @@ test("Use saved volume settings", async () => {
     await openDiscuss(channelId);
     await click("[title='Start a Call']");
     await contains(".o-discuss-Call");
+    await contains(
+        `.o-discuss-CallParticipantCard[title='${partnerName}'] .o-discuss-CallParticipantCard-contextMenuAnchor`
+    );
     await triggerEvents(`.o-discuss-CallParticipantCard[title='${partnerName}']`, ["contextmenu"]);
     await contains(".o-discuss-CallContextMenu");
     const rangeInput = queryFirst(".o-discuss-CallContextMenu input[type='range']");
@@ -517,4 +514,58 @@ test("automatically cancel incoming call after some time", async () => {
     await contains(".o-discuss-CallInvitation");
     await advanceTime(30_000);
     await contains(".o-discuss-CallInvitation", { count: 0 });
+});
+
+test("should also invite to the call when inviting to the channel", async () => {
+    mockGetMedia();
+    const pyEnv = await startServer();
+    const partnerId = pyEnv["res.partner"].create({
+        email: "testpartner@odoo.com",
+        name: "TestPartner",
+    });
+    pyEnv["res.users"].create({ partner_id: partnerId });
+    const channelId = pyEnv["discuss.channel"].create({
+        name: "TestChanel",
+        channel_member_ids: [Command.create({ partner_id: serverState.partnerId })],
+        channel_type: "channel",
+    });
+    await start();
+    await openDiscuss(channelId);
+    await click("[title='Start a Call']");
+    await contains(".o-discuss-Call");
+    await click(".o-mail-Discuss-header button[title='Invite People']");
+    await contains(".o-discuss-ChannelInvitation");
+    await click(".o-discuss-ChannelInvitation-selectable", { text: "TestPartner" });
+    await click("[title='Invite to Channel']:enabled");
+    await contains(".o-discuss-CallParticipantCard.o-isInvitation");
+});
+
+test("should not show context menu on participant card when not in a call", async () => {
+    mockGetMedia();
+    const pyEnv = await startServer();
+    const channelId = pyEnv["discuss.channel"].create({
+        name: "General",
+    });
+    pyEnv["discuss.channel.rtc.session"].create([
+        {
+            channel_member_id: pyEnv["discuss.channel.member"].create({
+                channel_id: channelId,
+                partner_id: pyEnv["res.partner"].create({ name: "Awesome Partner" }),
+            }),
+            channel_id: channelId,
+        },
+    ]);
+    await start();
+    await openDiscuss(channelId);
+    await contains(".o-discuss-CallParticipantCard[title='Awesome Partner']");
+    await contains(
+        ".o-discuss-CallParticipantCard[title='Awesome Partner'] .o-discuss-CallParticipantCard-contextMenuAnchor",
+        { count: 0 }
+    );
+    await click("[title='Join Call']");
+    await contains(
+        ".o-discuss-CallParticipantCard[title='Awesome Partner'] .o-discuss-CallParticipantCard-contextMenuAnchor"
+    );
+    await triggerEvents(".o-discuss-CallParticipantCard[title='Awesome Partner']", ["contextmenu"]);
+    await contains(".o-discuss-CallContextMenu");
 });

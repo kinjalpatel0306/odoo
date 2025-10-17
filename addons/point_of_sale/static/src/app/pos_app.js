@@ -25,6 +25,7 @@ export class Chrome extends Component {
                 ev.stopPropagation();
             }
             this.pos.showScreen(this.pos.firstScreen);
+            return false;
         });
         const reactivePos = reactive(this.pos);
         // TODO: Should we continue on exposing posmodel as global variable?
@@ -94,6 +95,7 @@ export class Chrome extends Component {
                         data: customerDisplayData,
                     },
                 }),
+                targetAddressSpace: "local",
             }).catch(() => {
                 console.log("Failed to send data to customer display");
             });

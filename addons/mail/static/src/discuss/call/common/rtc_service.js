@@ -15,6 +15,11 @@ import { memoize } from "@web/core/utils/functions";
 import { url } from "@web/core/utils/urls";
 import { callActionsRegistry } from "./call_actions";
 
+let sequence = 1;
+const getSequence = () => {
+    return sequence++;
+};
+
 /**
  *
  * @param {EventTarget} target
@@ -46,17 +51,12 @@ const SCREEN_CONFIG = {
     },
 };
 const CAMERA_CONFIG = {
-    width: { max: 1280 },
-    height: { max: 720 },
-    aspectRatio: 16 / 9,
-    frameRate: {
-        max: 30,
-    },
+    width: 1280,
 };
 const IS_CLIENT_RTC_COMPATIBLE = Boolean(window.RTCPeerConnection && window.MediaStream);
-const DEFAULT_ICE_SERVERS = [
-    { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"] },
-];
+function GET_DEFAULT_ICE_SERVERS() {
+    return [{ urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"] }];
+}
 
 /**
  * @param {Array<RTCIceServer>} iceServers
@@ -210,9 +210,10 @@ export class Rtc extends Record {
     timeouts = new Map();
     /** @type {Map<number, number>} timeoutId by sessionId for download pausing delay */
     downloadTimeouts = new Map();
-    iceServers = Record.attr(DEFAULT_ICE_SERVERS, {
+    /** @type {{urls: string[]}[]} */
+    iceServers = Record.attr(undefined, {
         compute() {
-            return this.iceServers ? this.iceServers : DEFAULT_ICE_SERVERS;
+            return this.iceServers ? this.iceServers : GET_DEFAULT_ICE_SERVERS();
         },
     });
     selfSession = Record.one("RtcSession");
@@ -234,6 +235,15 @@ export class Rtc extends Record {
     cleanups = [];
     /** @type {number} */
     sfuTimeout;
+    /** @type {number} count of how many times the p2p service attempted a connection recovery */
+    _p2pRecoveryCount = 0;
+    upgradeConnectionDebounce = debounce(
+        () => {
+            this._upgradeConnection();
+        },
+        15000,
+        { leading: true, trailing: false }
+    );
 
     callActions = Record.attr([], {
         compute() {
@@ -644,6 +654,9 @@ export class Rtc extends Record {
      * @param {Boolean} [param2.important] if the log is important and should be kept even if logRtc is disabled
      */
     log(session, entry, { error, step, state, important, ...data } = {}) {
+        if (!session) {
+            return;
+        }
         session.logStep = entry;
         if (!this.store.settings.logRtc && !important) {
             return;
@@ -680,6 +693,24 @@ export class Rtc extends Record {
             return;
         }
         switch (name) {
+            case "broadcast":
+                {
+                    const {
+                        senderId,
+                        message: { sequence },
+                    } = payload;
+                    if (!sequence) {
+                        return;
+                    }
+                    const session = await this.store.RtcSession.getWhenReady(senderId);
+                    if (!session) {
+                        return;
+                    }
+                    if (!session.sequence || session.sequence < sequence) {
+                        session.sequence = sequence;
+                    }
+                }
+                return;
             case "connection_change":
                 {
                     const { id, state } = payload;
@@ -705,8 +736,8 @@ export class Rtc extends Record {
                     return;
                 }
                 for (const [id, info] of Object.entries(payload)) {
-                    const session = this.store.RtcSession.get(Number(id));
-                    if (!session) {
+                    const session = await this.store.RtcSession.getWhenReady(Number(id));
+                    if (!this.state.channel || !session || session.eq(this.selfSession)) {
                         return;
                     }
                     // `isRaisingHand` is turned into the Date `raisingHand`
@@ -717,12 +748,19 @@ export class Rtc extends Record {
                 return;
             case "track":
                 {
-                    const { sessionId, type, track, active } = payload;
-                    const session = this.store.RtcSession.get(sessionId);
-                    if (!session) {
+                    const { sessionId, type, track, active, sequence } = payload;
+                    const session = await this.store.RtcSession.getWhenReady(sessionId);
+                    if (!session || !this.state.channel) {
                         this.log(
                             this.selfSession,
                             `track received for unknown session ${sessionId} (${this.state.connectionType})`
+                        );
+                        return;
+                    }
+                    if (sequence && sequence < session.sequence) {
+                        this.log(
+                            session,
+                            `track received for old sequence ${sequence} (${this.state.connectionType})`
                         );
                         return;
                     }
@@ -739,6 +777,22 @@ export class Rtc extends Record {
                     }, 2000);
                 }
                 return;
+            case "recovery": {
+                const { id } = payload;
+                const session = await this.store.RtcSession.getWhenReady(id);
+                if (
+                    !this.store.self.isInternalUser ||
+                    this.serverInfo ||
+                    this.state.fallbackMode ||
+                    !session?.channel.eq(this.state.channel)
+                ) {
+                    return;
+                }
+                this._p2pRecoveryCount++;
+                if (this._p2pRecoveryCount > 1 || !hasTurn(this.iceServers)) {
+                    this.upgradeConnectionDebounce();
+                }
+            }
         }
     }
 
@@ -749,6 +803,7 @@ export class Rtc extends Record {
             case this.SFU_CLIENT_STATE.AUTHENTICATED:
                 // if we are hot-swapping connection type, we clear the p2p as late as possible
                 this.p2pService.removeALlPeers();
+                this.sfuClient.broadcast({ sequence: getSequence() });
                 break;
             case this.SFU_CLIENT_STATE.CONNECTED:
                 browser.clearTimeout(this.sfuTimeout);
@@ -781,6 +836,18 @@ export class Rtc extends Record {
                 }
                 return;
         }
+    }
+
+    async _upgradeConnection() {
+        const channelId = this.state.channel?.id;
+        if (this.serverInfo || this.state.fallbackMode || !channelId) {
+            return;
+        }
+        await rpc(
+            "/mail/rtc/channel/upgrade_connection",
+            { channel_id: channelId },
+            { silent: true }
+        );
     }
 
     async _downgradeConnection() {
@@ -821,12 +888,12 @@ export class Rtc extends Record {
         if (this.state.channel.rtcSessions.length === 0) {
             return;
         }
+        const sequence = getSequence();
         for (const session of this.state.channel.rtcSessions) {
             if (session.eq(this.selfSession)) {
                 continue;
             }
-            this.log(session, "init call", { step: "init call" });
-            this.p2pService.addPeer(session.id);
+            this.p2pService.addPeer(session.id, { sequence });
         }
     }
 
@@ -899,8 +966,11 @@ export class Rtc extends Record {
         if (camera) {
             await this.toggleVideo("camera");
         }
-        await this.resetAudioTrack({ force: audio });
+        if (!this.selfSession) {
+            return;
+        }
         await this._initConnection();
+        await this.resetAudioTrack({ force: audio });
         if (!this.state.channel?.id) {
             return;
         }
@@ -1002,6 +1072,7 @@ export class Rtc extends Record {
         browser.clearTimeout(this.sfuTimeout);
         this.sfuClient = undefined;
         this.network = undefined;
+        this._p2pRecoveryCount = 0;
         this.state.updateAndBroadcastDebounce?.cancel();
         this.state.disconnectAudioMonitor?.();
         this.state.audioTrack?.stop();
@@ -1231,6 +1302,10 @@ export class Rtc extends Record {
                     : _t('%s" requires "screen recording" access', window.location.host);
             this.notification.add(str, { type: "warning" });
             stopVideo();
+            return;
+        }
+        if (!this.selfSession) {
+            closeStream(sourceStream);
             return;
         }
         let outputTrack = sourceStream ? sourceStream.getVideoTracks()[0] : undefined;
@@ -1544,8 +1619,17 @@ export const rtcService = {
      * @param {Partial<import("services").Services>} services
      */
     start(env, services) {
-        const rtc = env.services["mail.store"].rtc;
+        const store = env.services["mail.store"];
+        const rtc = store.rtc;
         rtc.p2pService = services["discuss.p2p"];
+        rtc.p2pService.acceptOffer = async (id, sequence) => {
+            const session = await store.RtcSession.getWhenReady(Number(id));
+            /**
+             * We only accept offers for new connections (higher sequence),
+             * or offers that renegotiate an existing connection (same sequence).
+             */
+            return sequence >= session?.sequence;
+        };
         services["bus_service"].subscribe(
             "discuss.channel.rtc.session/sfu_hot_swap",
             async ({ serverInfo }) => {
